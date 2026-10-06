@@ -1,0 +1,63 @@
+using Sirenix.OdinInspector;
+using UnityEngine;
+
+[CreateAssetMenu(
+    fileName = "PowerCable",
+    menuName = "Pulse Factory/Power/Power Cable Definition")]
+public class PowerCableDefinitionSO : ScriptableObject
+{
+    [Title("Power Cable Definition")]
+
+    [BoxGroup("Construction")]
+    [LabelText("Base Cost")]
+    [MinValue(0)]
+    [SerializeField]
+    private int baseCost = 10;
+
+    [BoxGroup("Construction")]
+    [LabelText("Cost Per Meter")]
+    [MinValue(0)]
+    [SerializeField]
+    private float costPerMeter;
+
+    [BoxGroup("Limits")]
+    [LabelText("Max Length")]
+    [SuffixLabel("m", Overlay = true)]
+    [MinValue(0.1f)]
+    [SerializeField]
+    private float maxLength = 2f;
+
+    [BoxGroup("Pulse")]
+    [LabelText("Pulse Speed")]
+    [SuffixLabel("m/s", Overlay = true)]
+    [MinValue(0.1f)]
+    [SerializeField]
+    private float pulseSpeed = 5f;
+
+    [BoxGroup("Visual")]
+    [LabelText("Cable Width")]
+    [MinValue(0.001f)]
+    [SerializeField]
+    private float cableWidth = 0.05f;
+
+    [BoxGroup("Visual")]
+    [AssetsOnly]
+    [SerializeField]
+    private Material cableMaterial;
+
+    public int BaseCost => baseCost;
+    public float CostPerMeter => costPerMeter;
+
+    public float MaxLength => maxLength;
+    public float PulseSpeed => pulseSpeed;
+
+    public float CableWidth => cableWidth;
+    public Material CableMaterial => cableMaterial;
+
+    public int GetBuildCost(float length)
+    {
+        return Mathf.CeilToInt(
+            baseCost +
+            length * costPerMeter);
+    }
+}
