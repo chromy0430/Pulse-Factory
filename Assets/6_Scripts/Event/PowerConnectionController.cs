@@ -1,11 +1,14 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PowerConnectionController : MonoBehaviour
 {
     [Title("Power Connection Controller")]
+
+    // ============================================================
+    // References
+    // ============================================================
 
     [BoxGroup("References")]
     [Required]
@@ -28,54 +31,131 @@ public class PowerConnectionController : MonoBehaviour
     private Transform cableRoot;
 
 
+    // ============================================================
+    // Raycast
+    // ============================================================
+
     [BoxGroup("Raycast")]
     [SerializeField]
     private LayerMask powerNodeLayer;
 
 
+    // ============================================================
+    // Build Mode
+    // ============================================================
+
+    [BoxGroup("Build Mode")]
+    [ShowInInspector]
+    [ReadOnly]
+    [LabelText("Cable Build Mode")]
+    public bool IsBuildMode { get; private set; }
+
+
+    // ============================================================
+    // Runtime
+    // ============================================================
+
     [BoxGroup("Runtime")]
     [ShowInInspector]
     [ReadOnly]
-    [LabelText("Selected Source")]
-    private PowerNode selectedSource;
+    [LabelText("Source Node")]
+    private PowerNode selectedSourceNode;
 
+    [BoxGroup("Runtime")]
+    [ShowInInspector]
+    [ReadOnly]
+    [LabelText("Source Port")]
+    private PowerPortSlot selectedSourcePort;
+
+
+    // ============================================================
+    // Unity
+    // ============================================================
 
     private void Update()
     {
-        if (Mouse.current == null)
+        if (Keyboard.current == null ||
+            Mouse.current == null)
             return;
+
+
+        // --------------------------------------------------------
+        // C : 전선 건설 모드
+        // --------------------------------------------------------
+
+        if (Keyboard.current.cKey.wasPressedThisFrame)
+        {
+            ToggleBuildMode();
+        }
+
+
+        if (!IsBuildMode)
+            return;
+
+
+        // --------------------------------------------------------
+        // 우클릭 : 현재 연결 취소
+        // --------------------------------------------------------
 
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
-            CancelSelection();
+            CancelCurrentConnection();
             return;
         }
 
-        if (!Mouse.current.leftButton.wasPressedThisFrame)
-            return;
 
-        if (EventSystem.current != null &&
-            EventSystem.current.IsPointerOverGameObject())
-            return;
+        // --------------------------------------------------------
+        // 좌클릭
+        // --------------------------------------------------------
 
-        TrySelectNode();
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            HandleClick();
+        }
     }
 
-    private void TrySelectNode()
+
+    // ============================================================
+    // Build Mode
+    // ============================================================
+
+    private void ToggleBuildMode()
+    {
+        IsBuildMode =
+            !IsBuildMode;
+
+        CancelCurrentConnection();
+
+        Debug.Log(
+            IsBuildMode
+                ? "[Cable] Build Mode ON"
+                : "[Cable] Build Mode OFF"
+        );
+    }
+
+
+    // ============================================================
+    // Click
+    // ============================================================
+
+    private void HandleClick()
     {
         Vector2 mousePosition =
             Mouse.current.position.ReadValue();
 
         Ray ray =
             mainCamera.ScreenPointToRay(
-                mousePosition);
+                mousePosition
+            );
 
         if (!Physics.Raycast(
                 ray,
                 out RaycastHit hit,
                 1000f,
                 powerNodeLayer))
+        {
             return;
+        }
 
         PowerNode node =
             hit.collider.GetComponentInParent<PowerNode>();
@@ -83,51 +163,141 @@ public class PowerConnectionController : MonoBehaviour
         if (node == null)
             return;
 
-        HandleNode(node);
+
+        // 첫 번째 클릭
+        if (selectedSourceNode == null)
+        {
+            SelectSource(
+                node,
+                hit.point
+            );
+
+            return;
+        }
+
+
+        // 두 번째 클릭
+        SelectTarget(
+            node,
+            hit.point
+        );
     }
 
-    private void HandleNode(
-        PowerNode node)
+
+    // ============================================================
+    // Source
+    // ============================================================
+
+    private void SelectSource(
+        PowerNode node,
+        Vector3 clickedWorldPosition)
     {
-        if (selectedSource == null)
+        if (!node.HasFreeOutput)
         {
-            if (!node.HasFreeOutput)
-                return;
-
-            selectedSource = node;
-
-            Debug.Log(
-                $"[Connection] Source: {node.name}");
+            Debug.LogWarning(
+                $"[Cable] {node.name}은 더 이상 Output을 만들 수 없습니다."
+            );
 
             return;
         }
 
-        if (selectedSource == node)
+        PowerPortSlot port =
+            node.FindClosestFreePort(
+                clickedWorldPosition
+            );
+
+        if (port == null)
+            return;
+
+        selectedSourceNode =
+            node;
+
+        selectedSourcePort =
+            port;
+
+        Debug.Log(
+            $"[Cable] Source : " +
+            $"{node.name} / {port.Position}"
+        );
+    }
+
+
+    // ============================================================
+    // Target
+    // ============================================================
+
+    private void SelectTarget(
+        PowerNode targetNode,
+        Vector3 clickedWorldPosition)
+    {
+        if (targetNode == selectedSourceNode)
         {
-            CancelSelection();
+            CancelCurrentConnection();
             return;
         }
+
+        if (!targetNode.HasFreeInput)
+        {
+            Debug.LogWarning(
+                $"[Cable] {targetNode.name}은 더 이상 Input을 받을 수 없습니다."
+            );
+
+            return;
+        }
+
+        PowerPortSlot targetPort =
+            targetNode.FindClosestFreePort(
+                clickedWorldPosition
+            );
+
+        if (targetPort == null)
+            return;
+
 
         bool success =
-            selectedSource.TryConnectTo(
-                node,
+            selectedSourceNode.TryConnectTo(
+                targetNode,
+                selectedSourcePort,
+                targetPort,
                 cablePrefab,
                 cableDefinition,
-                cableRoot);
+                cableRoot
+            );
 
         if (success)
         {
             Debug.Log(
-                $"[Connection] {selectedSource.name} → {node.name}");
+                $"[Cable] " +
+                $"{selectedSourceNode.name} " +
+                $"({selectedSourcePort.Position}) → " +
+                $"{targetNode.name} " +
+                $"({targetPort.Position})"
+            );
         }
 
-        selectedSource = null;
+        CancelCurrentConnection();
     }
 
-    [BoxGroup("Debug")]
-    [Button("Cancel Selection")]
-    private void CancelSelection()
+
+    // ============================================================
+    // Cancel
+    // ============================================================
+
+    private void CancelCurrentConnection()
     {
-        selectedSource = null;
+        selectedSourceNode = null;
+        selectedSourcePort = null;
+    }
+
+
+    // ============================================================
+    // Debug
+    // ============================================================
+
+    [BoxGroup("Debug")]
+    [Button("Toggle Cable Mode")]
+    private void DebugToggle()
+    {
+        ToggleBuildMode();
     }
 }

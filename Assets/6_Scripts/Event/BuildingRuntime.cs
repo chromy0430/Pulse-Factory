@@ -7,6 +7,10 @@ public class BuildingRuntime : PowerNode
         "Building Runtime",
         "Building Definition에 설정된 효과를 실행합니다.")]
 
+    // ============================================================
+    // Definition
+    // ============================================================
+
     [BoxGroup("Building")]
     [Required]
     [AssetsOnly]
@@ -17,9 +21,28 @@ public class BuildingRuntime : PowerNode
         definition;
 
 
+    // ============================================================
+    // Visual
+    // ============================================================
+
+    [BoxGroup("Visual")]
+    [Required]
+    [SerializeField]
+    private BuildingPulseVisual pulseVisual;
+
+
+    // ============================================================
+    // Pulse
+    // ============================================================
+
     protected override PulseData ProcessPulse(
         PulseData pulse)
     {
+        // 1. 공장에 전력 도착
+        // 2. 시각적인 POP 반응
+        pulseVisual?.PlayPulse();
+
+        // 3. 공장의 실제 기능 실행
         if (definition == null)
             return pulse;
 
@@ -34,6 +57,18 @@ public class BuildingRuntime : PowerNode
                 ref pulse);
         }
 
+        // 4. 가공된 Pulse를 다음 공장으로 전달
         return pulse;
+    }
+
+
+    // ============================================================
+    // Editor
+    // ============================================================
+
+    private void Reset()
+    {
+        pulseVisual =
+            GetComponent<BuildingPulseVisual>();
     }
 }

@@ -16,5 +16,5 @@ MonoBehaviour:
   costPerMeter: 0
   maxLength: 2
   pulseSpeed: 5
-  cableWidth: 0.05
-  cableMaterial: {fileID: 0}
+  cableWidth: 0.08
+  cableMaterial: {fileID: 2100000, guid: 7666a509e1cd7494aa5a90152685cae7, type: 2}

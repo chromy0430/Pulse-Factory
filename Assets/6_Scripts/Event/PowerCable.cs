@@ -45,13 +45,37 @@ public class PowerCable : MonoBehaviour
     [BoxGroup("Runtime")]
     [ShowInInspector]
     [ReadOnly]
+    [LabelText("Source Port")]
+    public PowerPortSlot SourcePort { get; private set; }
+
+    [BoxGroup("Runtime")]
+    [ShowInInspector]
+    [ReadOnly]
+    [LabelText("Target Port")]
+    public PowerPortSlot TargetPort { get; private set; }
+
+
+    [BoxGroup("Runtime")]
+    [ShowInInspector]
+    [ReadOnly]
+    [LabelText("Length")]
     [SuffixLabel("m", Overlay = true)]
-    public float Length =>
-        sourcePort != null && targetPort != null
-            ? Vector3.Distance(
-                sourcePort.position,
-                targetPort.position)
-            : 0f;
+    public float Length
+    {
+        get
+        {
+            if (SourcePort?.Anchor == null ||
+                TargetPort?.Anchor == null)
+            {
+                return 0f;
+            }
+
+            return Vector3.Distance(
+                SourcePort.Anchor.position,
+                TargetPort.Anchor.position);
+        }
+    }
+
 
     [BoxGroup("Runtime")]
     [ShowInInspector]
@@ -62,11 +86,14 @@ public class PowerCable : MonoBehaviour
             ? Definition.GetBuildCost(Length)
             : 0;
 
+
     [BoxGroup("Runtime")]
     [ShowInInspector]
     [ReadOnly]
+    [LabelText("Transmitting")]
     public bool IsTransmitting =>
         pulseRoutine != null;
+
 
     [BoxGroup("Runtime")]
     [ShowInInspector]
@@ -76,19 +103,26 @@ public class PowerCable : MonoBehaviour
         pulseQueue.Count;
 
 
-    private Transform sourcePort;
-    private Transform targetPort;
+    // ============================================================
+    // Runtime Data
+    // ============================================================
 
-    private readonly Queue<PulseData> pulseQueue = new();
+    private readonly Queue<PulseData> pulseQueue =
+        new();
 
     private Coroutine pulseRoutine;
 
+
+    // ============================================================
+    // Unity
+    // ============================================================
 
     private void Reset()
     {
         lineRenderer =
             GetComponent<LineRenderer>();
     }
+
 
     private void Awake()
     {
@@ -104,34 +138,49 @@ public class PowerCable : MonoBehaviour
         }
     }
 
+
     private void OnDestroy()
     {
+        SourcePort?.Disconnect(this);
+        TargetPort?.Disconnect(this);
+
         if (SourceNode != null)
-            SourceNode.UnregisterOutgoingCable(this);
+        {
+            SourceNode.UnregisterOutgoingCable(
+                this);
+        }
 
         if (TargetNode != null)
-            TargetNode.UnregisterIncomingCable(this);
+        {
+            TargetNode.UnregisterIncomingCable(
+                this);
+        }
     }
 
 
+    // ============================================================
+    // Initialize
+    // ============================================================
+
     public void Initialize(
         PowerCableDefinitionSO definition,
-        PowerNode source,
-        PowerNode target,
-        Transform sourcePortTransform,
-        Transform targetPortTransform)
+        PowerNode sourceNode,
+        PowerNode targetNode,
+        PowerPortSlot sourcePort,
+        PowerPortSlot targetPort)
     {
         Definition = definition;
 
-        SourceNode = source;
-        TargetNode = target;
+        SourceNode = sourceNode;
+        TargetNode = targetNode;
 
-        sourcePort = sourcePortTransform;
-        targetPort = targetPortTransform;
+        SourcePort = sourcePort;
+        TargetPort = targetPort;
 
         ApplyDefinition();
         RefreshVisual();
     }
+
 
     private void ApplyDefinition()
     {
@@ -152,30 +201,44 @@ public class PowerCable : MonoBehaviour
         }
     }
 
+
+    // ============================================================
+    // Cable Visual
+    // ============================================================
+
     public void RefreshVisual()
     {
-        if (sourcePort == null ||
-            targetPort == null ||
-            lineRenderer == null)
+        if (lineRenderer == null ||
+            SourcePort?.Anchor == null ||
+            TargetPort?.Anchor == null)
+        {
             return;
+        }
 
         lineRenderer.positionCount = 2;
 
         lineRenderer.SetPosition(
             0,
-            sourcePort.position);
+            SourcePort.Anchor.position);
 
         lineRenderer.SetPosition(
             1,
-            targetPort.position);
+            TargetPort.Anchor.position);
     }
 
 
-    public void Transmit(PulseData pulse)
+    // ============================================================
+    // Pulse
+    // ============================================================
+
+    public void Transmit(
+        PulseData pulse)
     {
         if (Definition == null ||
             TargetNode == null)
+        {
             return;
+        }
 
         pulseQueue.Enqueue(pulse);
 
@@ -186,6 +249,7 @@ public class PowerCable : MonoBehaviour
                     TransmitQueueRoutine());
         }
     }
+
 
     private IEnumerator TransmitQueueRoutine()
     {
@@ -201,9 +265,16 @@ public class PowerCable : MonoBehaviour
         pulseRoutine = null;
     }
 
+
     private IEnumerator TransmitSinglePulse(
         PulseData pulse)
     {
+        if (SourcePort?.Anchor == null ||
+            TargetPort?.Anchor == null)
+        {
+            yield break;
+        }
+
         if (pulseVisual == null)
         {
             TargetNode.ReceivePulse(pulse);
@@ -213,16 +284,17 @@ public class PowerCable : MonoBehaviour
         pulseVisual.gameObject.SetActive(true);
 
         pulseVisual.position =
-            sourcePort.position;
+            SourcePort.Anchor.position;
 
         while (Vector3.Distance(
                    pulseVisual.position,
-                   targetPort.position) > 0.01f)
+                   TargetPort.Anchor.position)
+               > 0.01f)
         {
             pulseVisual.position =
                 Vector3.MoveTowards(
                     pulseVisual.position,
-                    targetPort.position,
+                    TargetPort.Anchor.position,
                     Definition.PulseSpeed *
                     Time.deltaTime);
 
@@ -230,7 +302,7 @@ public class PowerCable : MonoBehaviour
         }
 
         pulseVisual.position =
-            targetPort.position;
+            TargetPort.Anchor.position;
 
         pulseVisual.gameObject.SetActive(false);
 
