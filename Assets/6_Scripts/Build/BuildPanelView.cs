@@ -1,0 +1,69 @@
+using DG.Tweening;
+using Sirenix.OdinInspector;
+using TMPro;
+using UnityEngine;
+
+public sealed class BuildPanelView : MonoBehaviour
+{
+    [BoxGroup("Panel"), Required, SerializeField] private RectTransform panel;
+    [BoxGroup("Panel"), Required, SerializeField] private CanvasGroup panelGroup;
+    [BoxGroup("Buttons"), Required, SerializeField] private UnityEngine.UI.Button factoryA;
+    [BoxGroup("Buttons"), Required, SerializeField] private UnityEngine.UI.Button factoryB;
+    [BoxGroup("Buttons"), Required, SerializeField] private UnityEngine.UI.Button cable;
+    [BoxGroup("Panel"), Required, SerializeField] private TMP_Text statusLabel;
+    [BoxGroup("Animation"), MinValue(0.01f), SerializeField] private float slideDuration = 0.22f;
+    [ShowInInspector, ReadOnly] public bool IsOpen { get; private set; }
+    public event System.Action<int> Selected;
+    private Tween slide;
+    private float HiddenY => -panel.rect.height - 24f;
+
+    private void Awake()
+    {
+        panel.anchoredPosition = new Vector2(0f, HiddenY);
+        panelGroup.interactable = false;
+        panelGroup.blocksRaycasts = false;
+        SetStatus("B | BUILD MENU");
+    }
+
+    private void OnEnable()
+    {
+        factoryA.onClick.AddListener(SelectA);
+        factoryB.onClick.AddListener(SelectB);
+        cable.onClick.AddListener(SelectCable);
+    }
+
+    private void OnDisable()
+    {
+        factoryA.onClick.RemoveListener(SelectA);
+        factoryB.onClick.RemoveListener(SelectB);
+        cable.onClick.RemoveListener(SelectCable);
+        slide?.Kill();
+        IsOpen = false;
+        panel.anchoredPosition = new Vector2(0f, HiddenY);
+        panelGroup.interactable = false;
+        panelGroup.blocksRaycasts = false;
+    }
+
+    private void SelectA() => Selected?.Invoke(0);
+    private void SelectB() => Selected?.Invoke(1);
+    private void SelectCable() => Selected?.Invoke(2);
+
+    public void SetOpen(bool open)
+    {
+        IsOpen = open;
+        slide?.Kill();
+        panelGroup.interactable = open;
+        // Closing panel still occludes world clicks during its slide.
+        panelGroup.blocksRaycasts = true;
+        if (!open && UnityEngine.EventSystems.EventSystem.current != null)
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        slide = panel.DOAnchorPosY(open ? 20f : HiddenY, slideDuration)
+            .SetEase(open ? Ease.OutCubic : Ease.InCubic).SetUpdate(true)
+            .OnComplete(() => panelGroup.blocksRaycasts = open);
+    }
+
+    public void SetStatus(string text)
+    {
+        if (statusLabel != null && statusLabel.text != text) statusLabel.text = text;
+    }
+}

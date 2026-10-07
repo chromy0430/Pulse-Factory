@@ -16,7 +16,8 @@ MonoBehaviour:
   displayName: "\uCF54\uC5B4"
   icon: {fileID: 0}
   buildCost: 0
-  prefab: {fileID: 0}
+  prefab: {fileID: 5175731008262102, guid: 788a72e1ddff2f84d85bfded73ad19b9, type: 3}
   maxInputs: 0
   maxOutputs: 2
   effects: []
+  placementSize: {x: 1, y: 1}

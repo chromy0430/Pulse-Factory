@@ -17,6 +17,11 @@ public class BuildingRuntime : PowerNode
     [SerializeField]
     private BuildingDefinitionSO definition;
 
+    public void Initialize(BuildingDefinitionSO value)
+    {
+        definition = value;
+    }
+
     protected override BuildingDefinitionSO Definition =>
         definition;
 

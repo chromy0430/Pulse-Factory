@@ -19,6 +19,11 @@ public class Core : PowerNode
 
     protected override BuildingDefinitionSO Definition =>
         definition;
+    
+    [BoxGroup("Visual")]
+    [Required]
+    [SerializeField]
+    private BuildingPulseVisual pulseVisual;
 
     [BoxGroup("Runtime")]
     [ShowInInspector]
@@ -49,10 +54,14 @@ public class Core : PowerNode
     protected override PulseData ProcessPulse(
         PulseData pulse)
     {
+        pulseVisual?.PlayPulse();
+        
         Debug.Log(
             $"[Core] Pulse #{pulse.Id} / Power {pulse.Power:F2}",
             gameObject);
 
         return pulse;
     }
+    
+    
 }

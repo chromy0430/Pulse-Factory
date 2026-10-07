@@ -9,28 +9,45 @@ public class CreditProductionEffectSO : BuildingEffectSO
     [Title("Credit Production")]
 
     [BoxGroup("Production")]
-    [LabelText("Credit Per Pulse")]
+    [LabelText("Base Credit Per Pulse")]
     [MinValue(0)]
     [SerializeField]
-    private int creditPerPulse = 10;
+    private int baseCreditPerPulse = 10;
 
-    public int CreditPerPulse =>
-        creditPerPulse;
+
+    public int BaseCreditPerPulse =>
+        baseCreditPerPulse;
+
 
     public override void Apply(
         BuildingRuntime building,
         ref PulseData pulse)
     {
-        int amount =
+        float rawCredit =
+            baseCreditPerPulse *
+            pulse.Power;
+
+        int finalCredit =
             Mathf.RoundToInt(
-                creditPerPulse *
-                pulse.Power);
+                rawCredit);
+
+
+        if (CreditWallet.Instance == null)
+        {
+            Debug.LogError(
+                "[CreditProduction] CreditWallet이 없습니다.",
+                building);
+
+            return;
+        }
+
+
+        CreditWallet.Instance.AddCredit(
+            finalCredit);
+
 
         Debug.Log(
-            $"[{building.name}] +{amount} Credit",
+            $"[{building.name}] +{finalCredit} Credit",
             building);
-
-        // 추후:
-        // CreditManager.Add(amount);
     }
 }

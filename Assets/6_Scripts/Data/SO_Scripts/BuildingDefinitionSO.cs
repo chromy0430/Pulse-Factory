@@ -84,6 +84,10 @@ public class BuildingDefinitionSO : ScriptableObject
     public string DisplayName => displayName;
     public Sprite Icon => icon;
 
+[BoxGroup("Construction"), SerializeField, MinValue(0.02f)]
+    private Vector2 placementSize = Vector2.one;
+    public Vector2 PlacementSize => placementSize;
+
     public int BuildCost => buildCost;
     public GameObject Prefab => prefab;
 

@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinitionSO
   id: 02
   displayName: "\uC0DD\uC0B0 \uACF5\uC7A5"
-  icon: {fileID: 0}
+  icon: {fileID: 9097041740602212254, guid: 2e05a1337d07b30438a2fa66a0cd83ae, type: 3}
   buildCost: 50
-  prefab: {fileID: 0}
+  prefab: {fileID: 1954214676692155143, guid: 4fdc14478468ce347bf30757528773fd, type: 3}
   maxInputs: 1
   maxOutputs: 2
   effects:
   - {fileID: 11400000, guid: ae78e71ccc970f949936044e6af0203c, type: 2}
+  placementSize: {x: 1, y: 1}
