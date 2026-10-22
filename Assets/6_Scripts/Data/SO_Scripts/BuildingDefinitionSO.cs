@@ -80,6 +80,13 @@ public class BuildingDefinitionSO : ScriptableObject
     // Properties
     // ============================================================
 
+    [BoxGroup("Build Menu"), LabelText("건설 메뉴 표시"), SerializeField]
+    private bool showInBuildMenu = true;
+    [BoxGroup("Build Menu"), LabelText("표시 순서"), SerializeField]
+    private int buildMenuOrder;
+    public bool ShowInBuildMenu => showInBuildMenu;
+    public int BuildMenuOrder => buildMenuOrder;
+
     public string Id => id;
     public string DisplayName => displayName;
     public Sprite Icon => icon;

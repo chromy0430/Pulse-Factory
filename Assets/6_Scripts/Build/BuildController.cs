@@ -32,13 +32,23 @@ public sealed class BuildController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (panel != null) panel.Selected += SelectTool;
+        if (panel != null)
+        {
+            panel.Selected += SelectTool;
+            panel.BuildingSelected += SelectBuilding;
+            panel.CableSelected += SelectCable;
+        }
         if (cables != null) cables.StatusChanged += OnCableStatus;
     }
 
     private void OnDisable()
     {
-        if (panel != null) panel.Selected -= SelectTool;
+        if (panel != null)
+        {
+            panel.Selected -= SelectTool;
+            panel.BuildingSelected -= SelectBuilding;
+            panel.CableSelected -= SelectCable;
+        }
         if (cables != null) cables.StatusChanged -= OnCableStatus;
         CancelMode();
         if (panel != null) panel.SetOpen(false);
@@ -82,29 +92,38 @@ public sealed class BuildController : MonoBehaviour
         if (open) panel.SetStatus("Choose a building or cable | B / ESC to close");
     }
 
+    // Compatibility for existing callers; the dynamic menu sends the SO itself.
     public void SelectTool(int index)
+    {
+        if (index == 2) SelectCable();
+        else SelectBuilding(index == 0 ? factoryA : index == 1 ? factoryB : null);
+    }
+
+    public void SelectCable()
     {
         CancelMode();
         panel.SetOpen(false);
         selectionFrame = Time.frameCount;
-        if (index == 2)
+        if (cables == null) return;
+        cables.SetBuildMode(true);
+        panel.SetStatus(cables.Status + " | Right click / ESC to cancel");
+    }
+
+    public void SelectBuilding(BuildingDefinitionSO definition)
+    {
+        CancelMode();
+        panel.SetOpen(false);
+        selectionFrame = Time.frameCount;
+        if (!BuildMenuRules.CanPlace(definition, out string reason) || !grid.IsConfigured)
         {
-            cables.SetBuildMode(true);
-            panel.SetStatus(cables.Status + " | Right click / ESC to cancel");
-            return;
-        }
-        var definition = index == 0 ? factoryA : index == 1 ? factoryB : null;
-        if (definition == null || definition.Prefab == null ||
-            definition.Prefab.GetComponent<BuildingRuntime>() == null || !grid.IsConfigured)
-        {
-            panel.SetStatus("Missing building prefab or board configuration");
+            panel.SetStatus(string.IsNullOrEmpty(reason) ? "Missing board configuration" : reason);
             return;
         }
         SelectedDefinition = definition;
         ghost = new GameObject("BuildGhost").AddComponent<BuildGhost>();
         ghost.Initialize(definition.PlacementSize, validMaterial, invalidMaterial);
         ghost.gameObject.SetActive(false);
-        panel.SetStatus(definition.name + " | Move onto board");
+        panel.SetStatus(BuildMenuRules.Label(definition) + " | Move onto board");
     }
 
     public BuildingRuntime PlaceAt(Vector3 position)

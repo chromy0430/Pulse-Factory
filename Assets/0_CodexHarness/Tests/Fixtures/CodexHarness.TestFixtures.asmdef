@@ -1,0 +1,11 @@
+{
+  "name": "CodexHarness.TestFixtures",
+  "rootNamespace": "CodexHarness.Tests",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_EDITOR"],
+  "noEngineReferences": false
+}

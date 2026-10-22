@@ -12,6 +12,9 @@ public sealed class BuildPanelView : MonoBehaviour
     [BoxGroup("Buttons"), Required, SerializeField] private UnityEngine.UI.Button cable;
     [BoxGroup("Panel"), Required, SerializeField] private TMP_Text statusLabel;
     [BoxGroup("Animation"), MinValue(0.01f), SerializeField] private float slideDuration = 0.22f;
+    [BoxGroup("Panel"), SerializeField] private BuildMenuListView menu;
+    public event System.Action<BuildingDefinitionSO> BuildingSelected;
+    public event System.Action CableSelected;
     [ShowInInspector, ReadOnly] public bool IsOpen { get; private set; }
     public event System.Action<int> Selected;
     private Tween slide;
@@ -19,6 +22,7 @@ public sealed class BuildPanelView : MonoBehaviour
 
     private void Awake()
     {
+        if (menu != null) menu.Initialize();
         panel.anchoredPosition = new Vector2(0f, HiddenY);
         panelGroup.interactable = false;
         panelGroup.blocksRaycasts = false;
@@ -27,13 +31,28 @@ public sealed class BuildPanelView : MonoBehaviour
 
     private void OnEnable()
     {
-        factoryA.onClick.AddListener(SelectA);
-        factoryB.onClick.AddListener(SelectB);
-        cable.onClick.AddListener(SelectCable);
+        if (menu != null)
+        {
+            menu.BuildingSelected += OnBuilding;
+            menu.CableSelected += OnCable;
+            menu.Hovered += SetStatus;
+        }
+        else
+        {
+            factoryA.onClick.AddListener(SelectA);
+            factoryB.onClick.AddListener(SelectB);
+            cable.onClick.AddListener(SelectCable);
+        }
     }
 
     private void OnDisable()
     {
+        if (menu != null)
+        {
+            menu.BuildingSelected -= OnBuilding;
+            menu.CableSelected -= OnCable;
+            menu.Hovered -= SetStatus;
+        }
         factoryA.onClick.RemoveListener(SelectA);
         factoryB.onClick.RemoveListener(SelectB);
         cable.onClick.RemoveListener(SelectCable);
@@ -43,6 +62,9 @@ public sealed class BuildPanelView : MonoBehaviour
         panelGroup.interactable = false;
         panelGroup.blocksRaycasts = false;
     }
+
+    private void OnBuilding(BuildingDefinitionSO definition) => BuildingSelected?.Invoke(definition);
+    private void OnCable() => CableSelected?.Invoke();
 
     private void SelectA() => Selected?.Invoke(0);
     private void SelectB() => Selected?.Invoke(1);

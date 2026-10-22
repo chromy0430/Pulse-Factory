@@ -8,26 +8,43 @@ public class PowerConnectionController : MonoBehaviour
     [BoxGroup("References"), Required, SerializeField] private PowerCable cablePrefab;
     [BoxGroup("References"), Required, AssetsOnly, SerializeField] private PowerCableDefinitionSO cableDefinition;
     [BoxGroup("References"), Required, SerializeField] private Transform cableRoot;
+    [BoxGroup("References"), SerializeField] private PowerPortVisuals portVisuals;
     [BoxGroup("Raycast"), SerializeField] private LayerMask powerNodeLayer;
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public bool IsBuildMode { get; private set; }
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] private PowerNode selectedSourceNode;
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] private PowerPortSlot selectedSourcePort;
     private int enabledFrame;
 
+    public PowerNode SelectedSource => selectedSourceNode;
+    public PowerPortSlot SelectedPort => selectedSourcePort;
+    public Camera ViewCamera => mainCamera;
     public string Status => selectedSourceNode == null
-        ? "CABLE | Select an output building"
-        : "CABLE | Select an input building";
+        ? "CABLE | Select an output port"
+        : "CABLE | Select an input port";
     public event System.Action<string> StatusChanged;
 
     private void Update()
     {
-        if (!IsBuildMode || Mouse.current == null || Time.frameCount <= enabledFrame) return;
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        if (!IsBuildMode) return;
+        if (selectedSourcePort != null && (selectedSourceNode == null ||
+            !selectedSourceNode.isActiveAndEnabled || !selectedSourceNode.HasFreeOutput ||
+            !selectedSourcePort.IsFree || selectedSourcePort.Anchor == null))
+            CancelCurrentConnection();
+        if (Mouse.current == null || Time.frameCount <= enabledFrame) return;
+        if (Mouse.current.rightButton.wasPressedThisFrame ||
+            (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame))
         {
             SetBuildMode(false);
             return;
         }
-        if (Mouse.current.leftButton.wasPressedThisFrame && !BuildPointer.IsOverUI())
+        bool overUI = BuildPointer.IsOverUI();
+        if (portVisuals != null && portVisuals.IsReady)
+        {
+            portVisuals.UpdatePointer(Mouse.current.position.ReadValue(), overUI);
+            if (!overUI && Mouse.current.leftButton.wasPressedThisFrame)
+                portVisuals.SelectHovered();
+        }
+        else if (!overUI && Mouse.current.leftButton.wasPressedThisFrame)
             HandleClick();
     }
 
@@ -49,45 +66,49 @@ public class PowerConnectionController : MonoBehaviour
         if (node != null) SelectNode(node, hit.point);
     }
 
+    // Compatibility path for existing callers when the optional marker module is absent.
     public void SelectNode(PowerNode node, Vector3 clickedWorldPosition)
     {
-        if (!IsBuildMode || node == null) return;
-        if (selectedSourceNode == null)
-        {
-            if (!node.HasFreeOutput)
-            {
-                StatusChanged?.Invoke("No free output port. Select another building.");
-                return;
-            }
-            selectedSourcePort = node.FindClosestFreePort(clickedWorldPosition);
-            if (selectedSourcePort == null) return;
-            selectedSourceNode = node;
-            StatusChanged?.Invoke(Status);
-            return;
-        }
-        if (node == selectedSourceNode)
-        {
-            CancelCurrentConnection();
-            return;
-        }
-        if (!node.HasFreeInput)
-        {
-            StatusChanged?.Invoke("Target has no free input. Select another building.");
-            return;
-        }
-        PowerPortSlot targetPort = node.FindClosestFreePort(clickedWorldPosition);
-        bool connected = targetPort != null && selectedSourceNode.TryConnectTo(
-            node, selectedSourcePort, targetPort, cablePrefab, cableDefinition, cableRoot);
-        if (connected)
-            Debug.Log($"[Cable] {selectedSourceNode.name} ({selectedSourcePort.Position}) -> {node.name} ({targetPort.Position})");
-        CancelCurrentConnection();
-        if (!connected) StatusChanged?.Invoke($"Connection rejected. Max cable: {cableDefinition.MaxLength:0.0}m. Check ports and direction.");
+        if (node != null) SelectPort(node, node.FindClosestFreePort(clickedWorldPosition));
     }
 
-    private void CancelCurrentConnection()
+    public bool CanSelectPort(PowerNode node, PowerPortSlot port)
+    {
+        if (!IsBuildMode || node == null || !node.isActiveAndEnabled ||
+            port == null || port.Anchor == null || !port.IsFree) return false;
+        bool owned = false;
+        for (int i = 0; i < node.Ports.Count; i++)
+            if (node.Ports[i] == port) { owned = true; break; }
+        if (!owned) return false;
+        return selectedSourceNode == null ? node.HasFreeOutput :
+            node != selectedSourceNode && node.HasFreeInput;
+    }
+
+    public bool SelectPort(PowerNode node, PowerPortSlot port)
+    {
+        if (!CanSelectPort(node, port)) return false;
+        if (selectedSourceNode == null)
+        {
+            selectedSourcePort = port;
+            selectedSourceNode = node;
+            StatusChanged?.Invoke(Status);
+            return true;
+        }
+        bool connected = selectedSourceNode.TryConnectTo(
+            node, selectedSourcePort, port, cablePrefab, cableDefinition, cableRoot);
+        if (connected)
+            Debug.Log($"[Cable] {selectedSourceNode.name} ({selectedSourcePort.Position}) -> {node.name} ({port.Position})");
+        CancelCurrentConnection();
+        if (!connected)
+            StatusChanged?.Invoke($"Connection rejected. Max cable: {cableDefinition.MaxLength:0.0}m. Check ports and direction.");
+        return connected;
+    }
+
+    public void CancelCurrentConnection()
     {
         selectedSourceNode = null;
         selectedSourcePort = null;
+        if (portVisuals != null) portVisuals.ClearHover();
         StatusChanged?.Invoke(Status);
     }
 }

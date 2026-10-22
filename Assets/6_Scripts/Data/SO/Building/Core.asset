@@ -20,4 +20,6 @@ MonoBehaviour:
   maxInputs: 0
   maxOutputs: 2
   effects: []
+  showInBuildMenu: 0
+  buildMenuOrder: 0
   placementSize: {x: 1, y: 1}

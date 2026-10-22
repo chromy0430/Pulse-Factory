@@ -1,6 +1,5 @@
 using System.IO;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace CodexHarness.Tests
 {
@@ -9,19 +8,37 @@ namespace CodexHarness.Tests
         [Test]
         public void ProjectStructure_IsPresent()
         {
-            Assert.That(CodexHarness.CodexHarnessProjectValidator.CollectFailures(), Is.Empty);
+            Assert.That(CodexHarnessProjectValidator.CollectFailures(), Is.Empty);
         }
 
         [Test]
-        public void FirstPartyScripts_StayWithinSizeBudget()
+        public void HarnessScripts_StayWithinConfiguredSizeBudget()
         {
-            string root = Directory.GetParent(Application.dataPath).FullName;
-            string scripts = Path.Combine(root, "Assets/CodexHarness");
-            string[] files = Directory.GetFiles(scripts, "*.cs", SearchOption.AllDirectories);
-            for (int i = 0; i < files.Length; i++)
-            {
-                Assert.That(File.ReadAllLines(files[i]).Length, Is.LessThanOrEqualTo(300), files[i]);
-            }
+            var settings = CodexHarnessSettings.Load();
+            string path = CodexHarnessSettings.ResolvePath(settings.harnessRoot);
+            foreach (string file in Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories))
+                Assert.That(File.ReadAllLines(file).Length, Is.LessThanOrEqualTo(settings.maxScriptLines), file);
+        }
+
+        [Test]
+        public void SourceRoots_IncludeActualGameplayScripts()
+        {
+            var settings = CodexHarnessSettings.Load();
+            string expected = CodexHarnessSettings.ResolvePath("Assets/6_Scripts/Build/BuildController.cs");
+            Assert.That(settings.SourceFiles(), Does.Contain(expected));
+        }
+
+        [Test]
+        public void MissingSourceRoot_CannotProducePass()
+        {
+            var settings = new CodexHarnessSettings { sourceRoots = new[] { "Assets/__HarnessAbsentRoot" } };
+            Assert.Throws<DirectoryNotFoundException>(() => settings.SourceFiles());
+        }
+
+        [Test]
+        public void ConfigPaths_CannotEscapeProject()
+        {
+            Assert.Throws<InvalidDataException>(() => CodexHarnessSettings.ResolvePath("../OtherProject"));
         }
     }
 }

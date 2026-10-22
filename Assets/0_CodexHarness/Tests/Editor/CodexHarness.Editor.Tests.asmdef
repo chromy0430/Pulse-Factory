@@ -1,7 +1,7 @@
 {
   "name": "CodexHarness.Editor.Tests",
   "rootNamespace": "CodexHarness.Tests",
-  "references": ["CodexHarness.Editor", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "references": ["CodexHarness.Editor", "CodexHarness.TestFixtures", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
   "includePlatforms": ["Editor"],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

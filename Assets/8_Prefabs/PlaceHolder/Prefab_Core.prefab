@@ -108,6 +108,7 @@ MonoBehaviour:
     anchor: {fileID: 2559374765853527709}
   definition: {fileID: 11400000, guid: 81e79c25cb6841246a2a7bb25c3b4ca8, type: 2}
   pulseEvent: {fileID: 11400000, guid: 925327e59579e614b9578afdc1418473, type: 2}
+  pulseVisual: {fileID: 0}
 --- !u!1 &2120828363337352843
 GameObject:
   m_ObjectHideFlags: 0

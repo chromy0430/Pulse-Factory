@@ -4,6 +4,17 @@ using UnityEngine;
 
 public abstract class PowerNode : MonoBehaviour
 {
+    public static event System.Action TopologyChanged;
+    protected virtual void OnEnable() => TopologyChanged?.Invoke();
+    protected virtual void OnDisable() => TopologyChanged?.Invoke();
+    protected virtual void OnDestroy()
+    {
+        for (int i = outgoingCables.Count - 1; i >= 0; i--)
+            if (outgoingCables[i] != null) Destroy(outgoingCables[i].gameObject);
+        for (int i = incomingCables.Count - 1; i >= 0; i--)
+            if (incomingCables[i] != null) Destroy(incomingCables[i].gameObject);
+    }
+
     [Title("Power Node")]
 
     // ============================================================

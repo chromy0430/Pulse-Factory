@@ -31,14 +31,16 @@ public class Core : PowerNode
     [LabelText("Received Global Pulses")]
     private int globalPulseCount;
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         if (pulseEvent != null)
             pulseEvent.Subscribe(OnGlobalPulse);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         if (pulseEvent != null)
             pulseEvent.Unsubscribe(OnGlobalPulse);
     }

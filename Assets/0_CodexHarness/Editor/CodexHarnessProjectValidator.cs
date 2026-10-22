@@ -8,69 +8,59 @@ namespace CodexHarness
 {
     public static class CodexHarnessProjectValidator
     {
-        private static readonly string[] RequiredDirectories =
-        {
-            "Assets/CodexHarness/Editor",
-            "Assets/CodexHarness/Tests/Editor",
-            "Tools/Codex",
-            "docs/architecture",
-            "docs/workflows"
-        };
-
         [MenuItem("Codex Harness/Validate Project")]
-        public static void ValidateFromMenu()
-        {
-            ValidateAndLog();
-        }
+        public static void ValidateFromMenu() => ValidateAndLog();
 
         public static void ValidateAndExit()
         {
-            EditorApplication.Exit(ValidateAndLog());
+            if (!Application.isBatchMode)
+            {
+                Debug.LogError("[CodexHarness] ValidateAndExit is batchmode-only.");
+                return;
+            }
+            EditorApplication.Exit(ValidateAndLog() == 0 ? 0 : 1);
         }
 
         public static int ValidateAndLog()
         {
             List<string> failures = CollectFailures();
+            foreach (string failure in failures)
+                Debug.LogError("[CodexHarness] FAIL: " + failure);
             if (failures.Count == 0)
-            {
                 Debug.Log("[CodexHarness] PASS: project structure and metadata checks passed.");
-                return 0;
-            }
-
-            for (int i = 0; i < failures.Count; i++)
-            {
-                Debug.LogError("[CodexHarness] FAIL: " + failures[i]);
-            }
-
             return failures.Count;
         }
 
         public static List<string> CollectFailures()
         {
-            List<string> failures = new List<string>();
-            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            string versionPath = Path.Combine(projectRoot, "ProjectSettings/ProjectVersion.txt");
-            string manifestPath = Path.Combine(projectRoot, "Packages/manifest.json");
-
-            if (!File.Exists(versionPath)) failures.Add("ProjectSettings/ProjectVersion.txt is missing.");
-            if (!File.Exists(manifestPath)) failures.Add("Packages/manifest.json is missing.");
-
-            for (int i = 0; i < RequiredDirectories.Length; i++)
+            var failures = new List<string>();
+            try
             {
-                string path = Path.Combine(projectRoot, RequiredDirectories[i]);
-                if (!Directory.Exists(path)) failures.Add("Required directory is missing: " + RequiredDirectories[i]);
+                var settings = CodexHarnessSettings.Load();
+                foreach (string file in settings.RequiredFiles())
+                    if (!File.Exists(CodexHarnessSettings.ResolvePath(file)))
+                        failures.Add("Required file is missing: " + file);
+                string versionPath = CodexHarnessSettings.ResolvePath("ProjectSettings/ProjectVersion.txt");
+                string manifestPath = CodexHarnessSettings.ResolvePath("Packages/manifest.json");
+                if (!File.Exists(versionPath)) failures.Add("ProjectVersion.txt is missing.");
+                else if (!HasExpectedVersion(versionPath, settings.expectedUnityVersion))
+                    failures.Add("Unity version differs from HarnessConfig.json.");
+                if (!File.Exists(manifestPath)) failures.Add("Packages/manifest.json is missing.");
+                settings.SourceFiles();
             }
-
-            if (File.Exists(versionPath))
+            catch (Exception exception)
             {
-                string version = File.ReadAllText(versionPath);
-                if (version.IndexOf("6000.3.19f1", StringComparison.OrdinalIgnoreCase) < 0)
-                {
-                    Debug.LogWarning("[CodexHarness] Project version differs from the inspected baseline; re-check package/API assumptions.");
-                }
+                failures.Add(exception.Message);
             }
-
             return failures;
+        }
+
+        private static bool HasExpectedVersion(string path, string expected)
+        {
+            foreach (string line in File.ReadAllLines(path))
+                if (line.StartsWith("m_EditorVersion:", StringComparison.Ordinal))
+                    return line.Substring("m_EditorVersion:".Length).Trim() == expected;
+            return false;
         }
     }
 }

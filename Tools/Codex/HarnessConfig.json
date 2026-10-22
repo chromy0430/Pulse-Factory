@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "expectedUnityVersion": "6000.3.24f1",
+  "harnessRoot": "Assets/0_CodexHarness",
+  "sourceRoots": ["Assets/6_Scripts", "Assets/0_CodexHarness"],
+  "maxScriptLines": 300
+}

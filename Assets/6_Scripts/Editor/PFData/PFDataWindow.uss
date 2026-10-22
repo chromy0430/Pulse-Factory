@@ -1,0 +1,33 @@
+.pf-data { flex-grow: 1; }
+#pf-brand { -unity-font-style: bold; padding-left: 8px; padding-right: 16px; -unity-text-align: middle-left; }
+.pf-data .unity-toolbar-button { min-width: 64px; }
+.pf-active-tab { background-color: rgb(53, 86, 110); color: white; }
+.pf-sidebar { min-width: 260px; padding: 8px; }
+#pf-search { margin-bottom: 8px; }
+#pf-count { margin-bottom: 8px; -unity-font-style: bold; }
+.pf-asset { height: 26px; margin-left: 3px; margin-bottom: 4px; -unity-text-align: middle-left; padding-left: 10px; }
+.pf-selected { background-color: rgb(0, 100, 105); color: white; }
+.pf-primary { background-color: rgb(38, 112, 47); color: white; height: 30px; margin-top: 6px; }
+.pf-primary:hover { background-color: rgb(48, 135, 58); }
+.pf-primary:disabled { background-color: rgb(65, 65, 65); color: rgb(145, 145, 145); }
+.pf-danger { background-color: rgb(126, 48, 48); color: white; min-height: 26px; }
+.pf-danger:hover { background-color: rgb(151, 56, 56); }
+.pf-danger:disabled { background-color: rgb(65, 65, 65); color: rgb(145, 145, 145); }
+#pf-delete-title { -unity-font-style: bold; margin-bottom: 6px; }
+#pf-delete-target, #pf-delete-hint { white-space: normal; margin-bottom: 6px; }
+#pf-delete-details { max-height: 140px; margin-bottom: 6px; }
+.pf-detail { min-width: 460px; flex-grow: 1; padding: 12px; border-left-width: 1px; border-left-color: rgb(75, 75, 75); }
+.pf-heading { font-size: 15px; -unity-font-style: bold; margin-bottom: 8px; }
+.pf-path { white-space: normal; margin-top: 6px; margin-bottom: 12px; opacity: 0.7; }
+.pf-row { flex-direction: row; }
+.pf-row > Button { flex-grow: 1; }
+.pf-create-form { padding: 8px; margin-top: 8px; margin-bottom: 8px; border-top-width: 1px; border-top-color: rgb(85, 85, 85); }
+#pf-create-title { -unity-font-style: bold; margin-bottom: 8px; }
+#pf-create-hint { white-space: normal; opacity: 0.7; margin-top: 6px; margin-bottom: 6px; }
+.pf-create-form .unity-base-field { flex-direction: column; }
+.pf-create-form .unity-base-field__label { min-width: 0; margin-bottom: 2px; }
+
+.pf-preview { min-width: 280px; padding: 12px; border-left-width: 1px; border-left-color: rgb(75, 75, 75); }
+#pf-preview-viewport { flex-grow: 1; min-height: 220px; background-color: rgb(33, 38, 46); overflow: hidden; margin-top: 8px; margin-bottom: 8px; }
+#pf-preview-canvas { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.pf-preview-help { white-space: normal; margin-top: 8px; margin-bottom: 8px; color: rgb(195, 202, 210); }
