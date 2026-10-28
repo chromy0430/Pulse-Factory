@@ -25,7 +25,7 @@ public class CreditProductionEffectSO : BuildingEffectSO
     {
         float rawCredit =
             baseCreditPerPulse *
-            pulse.Power;
+            pulse.Power * (1f + (PulseFactory.Progression.ProgressionState.Instance?.Total(PulseFactory.Progression.ProgressionEffect.CreditBonus) ?? 0f));
 
         int finalCredit =
             Mathf.RoundToInt(

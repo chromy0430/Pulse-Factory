@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb207f006c329ec469a1d4bb44a3d645, type: 3}
+  m_Name: ResearchFactory
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinitionSO
+  id: ResearchFactory
+  displayName: "\uC5F0\uAD6C \uACF5\uC7A5"
+  icon: {fileID: 9097041740602212254, guid: 2e05a1337d07b30438a2fa66a0cd83ae, type: 3}
+  buildCost: 300
+  prefab: {fileID: 5179932304888873311, guid: 1e03ede4fb0ebf44985fea6e4140871a, type: 3}
+  maxInputs: 1
+  maxOutputs: 2
+  effects:
+  - {fileID: 11400000, guid: 117400cb921dfee4f8dbbf2484667c95, type: 2}
+  showInBuildMenu: 1
+  buildMenuOrder: 0
+  placementSize: {x: 1, y: 1}

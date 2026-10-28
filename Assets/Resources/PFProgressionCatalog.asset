@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e368beb795cc3478d8a5a7d9bfcf71, type: 3}
+  m_Name: PFProgressionCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::PulseFactory.Progression.ProgressionCatalogSO
+  nodes:
+  - {fileID: 11400000, guid: 4651348959f347d458c180ff136aa114, type: 2}
+  - {fileID: 11400000, guid: 7c8eb9767476c8c409d283c4fec06667, type: 2}
+  - {fileID: 11400000, guid: acb664ed8f54d25449aceba63b77cf84, type: 2}
+  - {fileID: 11400000, guid: f180c2a7eb4960d459b2f33d42e5d281, type: 2}
+  - {fileID: 11400000, guid: fe6f4479fd77ff84385d2d0864db9a42, type: 2}

@@ -148,6 +148,7 @@ public class CameraZoom : MonoBehaviour
 
     private void ReadZoomInput()
     {
+        if (PulseFactory.Progression.ProgressionUI.IsOpen || BuildPointer.IsOverUI()) return;
         if (Mouse.current == null)
             return;
 

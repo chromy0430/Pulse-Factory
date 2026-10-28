@@ -37,10 +37,15 @@ public sealed class BuildMenuItemView : MonoBehaviour, IPointerEnterHandler
             fallback.gameObject.SetActive(!icon.enabled || icon.sprite == null);
             fallback.text = isCable ? "↗" : label.text.Length > 0 ? label.text.Substring(0, 1) : "?";
         }
-        bool valid = BuildMenuRules.CanPlace(definition, out string reason);
-        button.interactable = isCable || valid;
-        description = isCable ? "전선 연결 | 출발 포트와 도착 포트를 선택하세요." :
-            valid ? label.text + " | 비용 " + definition.BuildCost : label.text + " | " + reason;
+        RefreshAvailability();
+    }
+
+    public void RefreshAvailability()
+    {
+        bool valid = BuildMenuRules.CanPlace(Definition, out string reason);
+        button.interactable = IsCable || valid;
+        description = IsCable ? "전선 연결 | 출발 포트와 도착 포트를 선택하세요." :
+            valid ? label.text + " | 비용 " + Definition.BuildCost : label.text + " | " + reason;
         var color = icon.color;
         color.a = button.interactable ? 1f : 0.35f;
         icon.color = color;

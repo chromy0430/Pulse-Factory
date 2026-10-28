@@ -14,6 +14,9 @@ public static class BuildMenuRules
             reason = "건설 Prefab에 BuildingRuntime이 필요합니다.";
         else if (definition.PlacementSize.x <= 0f || definition.PlacementSize.y <= 0f)
             reason = "Placement Size는 0보다 커야 합니다.";
+        else if (PulseFactory.Progression.ProgressionState.Instance != null &&
+                 !PulseFactory.Progression.ProgressionState.Instance.IsUnlocked(definition))
+            reason = "선행 연구를 완료해야 건설할 수 있습니다.";
         return reason.Length == 0;
     }
 }

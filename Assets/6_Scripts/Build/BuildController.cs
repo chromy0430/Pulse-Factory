@@ -56,6 +56,7 @@ public sealed class BuildController : MonoBehaviour
 
     private void Update()
     {
+        if (PulseFactory.Progression.ProgressionUI.IsOpen) return;
         var keyboard = Keyboard.current;
         if (keyboard != null && keyboard.bKey.wasPressedThisFrame)
         {
@@ -77,6 +78,8 @@ public sealed class BuildController : MonoBehaviour
         if (!show) return;
         PreviewPosition = position;
         CanPlace = grid.CanPlace(position, SelectedDefinition.PlacementSize, out string reason);
+        var progressionPolicy = GetComponent<PulseFactory.Progression.ProgressionBuildPolicy>();
+        if (CanPlace && progressionPolicy != null) CanPlace = progressionPolicy.CanBuild(out reason);
         PlacementStatus = reason;
         ghost.Refresh(grid, position, CanPlace);
         panel.SetStatus(SelectedDefinition.name + " | " + reason);
@@ -129,6 +132,9 @@ public sealed class BuildController : MonoBehaviour
     public BuildingRuntime PlaceAt(Vector3 position)
     {
         if (SelectedDefinition == null || panel.IsOpen) return null;
+        if (!BuildMenuRules.CanPlace(SelectedDefinition, out _)) return null;
+        var progressionPolicy = GetComponent<PulseFactory.Progression.ProgressionBuildPolicy>();
+        if (progressionPolicy != null && !progressionPolicy.CanBuild(out _)) return null;
         position = grid.Snap(position);
         Physics.SyncTransforms();
         if (!grid.CanPlace(position, SelectedDefinition.PlacementSize, out _)) return null;

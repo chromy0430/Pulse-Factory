@@ -72,6 +72,8 @@ public sealed class BuildPanelView : MonoBehaviour
 
     public void SetOpen(bool open)
     {
+        if (open && menu != null)
+            foreach (var item in menu.Items) item.RefreshAvailability();
         IsOpen = open;
         slide?.Kill();
         panelGroup.interactable = open;

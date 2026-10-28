@@ -48,7 +48,7 @@ public class PowerCableDefinitionSO : ScriptableObject
     public int BaseCost => baseCost;
     public float CostPerMeter => costPerMeter;
 
-    public float MaxLength => maxLength;
+    public float MaxLength => maxLength + (PulseFactory.Progression.ProgressionState.Instance?.Total(PulseFactory.Progression.ProgressionEffect.CableLength) ?? 0f);
     public float PulseSpeed => pulseSpeed;
 
     public float CableWidth => cableWidth;
