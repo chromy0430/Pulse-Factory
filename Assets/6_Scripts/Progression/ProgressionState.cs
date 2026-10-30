@@ -45,16 +45,22 @@ namespace PulseFactory.Progression
         public bool CanPurchase(ProgressionNodeSO node, out string reason)
         {
             if (!isActiveAndEnabled) { reason = "진행 시스템이 비활성화되어 있습니다."; return false; }
-            reason = catalog == null ? "트리 데이터가 없습니다." : catalog.Validate(node);
-            if (reason != null) return false;
+            if (!CanAccess(node, out reason)) return false;
             if (purchasing) reason = "구매 처리 중입니다.";
             else if (Level(node) >= node.MaxLevel) reason = "최대 단계입니다.";
             else if (node.effect >= ProgressionEffect.RefundRatio) reason = "이 효과를 처리할 게임 모듈이 아직 연결되지 않았습니다.";
-            else foreach (var prerequisite in node.prerequisites)
-                if (Level(prerequisite) < prerequisite.MaxLevel) { reason = "선행 완료 필요: " + prerequisite.title; break; }
             if (reason == null && (wallet == null || !wallet.CanSpend(node.Cost(Level(node))))) reason = "크레딧이 부족합니다.";
             if (reason == null && ResearchPoints < node.Cost(Level(node), true)) reason = "연구 포인트가 부족합니다.";
             return reason == null;
+        }
+        public bool CanAccess(ProgressionNodeSO node, out string reason)
+        {
+            reason = catalog == null ? "트리 데이터가 없습니다." : catalog.Validate(node);
+            if (reason != null) return false;
+            foreach (var prerequisite in node.prerequisites)
+                if (Level(prerequisite) < prerequisite.MaxLevel)
+                { reason = "선행 완료 필요: " + prerequisite.title; return false; }
+            return true;
         }
         public bool TryPurchase(ProgressionNodeSO node, out string reason)
         {

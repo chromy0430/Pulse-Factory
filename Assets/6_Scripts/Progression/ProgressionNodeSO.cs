@@ -14,6 +14,10 @@ namespace PulseFactory.Progression
         public ProgressionKind kind;
         public string title = "New node";
         [TextArea] public string description;
+        [Tooltip("트리를 열 때 중앙에 놓을 시작 노드. Tools/PF Progression에서 지정할 수 있습니다.")]
+        public bool entryNode;
+        [Tooltip("비워 두면 Title을 사용합니다.")] public string tooltipTitle;
+        [TextArea(3, 12), Tooltip("비워 두면 Description을 사용합니다.")] public string tooltipDescription;
         public Sprite icon;
         public Vector2 position;
         public List<ProgressionNodeSO> prerequisites = new();

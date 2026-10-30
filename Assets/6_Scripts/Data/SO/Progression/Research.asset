@@ -17,6 +17,9 @@ MonoBehaviour:
   title: "\uC804\uB825 \uACF5\uAE09\uB9DD \uAC15\uD654"
   description: "\uC804\uC120 \uCD5C\uB300 \uAE38\uC774\uB97C 2m\uC5D0\uC11C 5m\uB85C
     \uB298\uB9BD\uB2C8\uB2E4."
+  entryNode: 0
+  tooltipTitle: 
+  tooltipDescription: 
   icon: {fileID: 0}
   position: {x: 140.59796, y: 27.838371}
   prerequisites: []

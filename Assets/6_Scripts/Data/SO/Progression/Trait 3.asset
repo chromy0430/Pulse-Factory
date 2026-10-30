@@ -18,6 +18,9 @@ MonoBehaviour:
   description: "\uACF5\uC7A5 \uC218\uC6A9\uB7C9 +1. \uD2B9\uC131 \uBE44\uC6A9\xB7\uCD5C\uB300
     \uB2E8\uACC4\xB7\uC5F0\uACB0\uC740 \uD3B8\uC9D1 \uAC00\uB2A5\uD55C \uD14C\uC2A4\uD2B8
     \uAE30\uBCF8\uAC12\uC785\uB2C8\uB2E4."
+  entryNode: 0
+  tooltipTitle: 
+  tooltipDescription: 
   icon: {fileID: 0}
   position: {x: 301.52197, y: 0}
   prerequisites: []

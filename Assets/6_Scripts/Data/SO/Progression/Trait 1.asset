@@ -18,8 +18,11 @@ MonoBehaviour:
   description: "\uD2B9\uC131 \uBE44\uC6A9\xB7\uB2E8\uACC4\xB7\uC5F0\uACB0\uC740 \uD14C\uC2A4\uD2B8
     \uAE30\uBCF8\uAC12\uC785\uB2C8\uB2E4. \uC624\uB978\uCABD Inspector\uC5D0\uC11C
     \uBCC0\uACBD\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+  entryNode: 0
+  tooltipTitle: 
+  tooltipDescription: 
   icon: {fileID: 0}
-  position: {x: 0, y: 0}
+  position: {x: 1, y: 0}
   prerequisites: []
   creditCost: 100
   researchCost: 0

@@ -73,6 +73,18 @@ namespace PulseFactory.EditorTools
             inspector.Add(new InspectorElement(selected));
             inspector.Add(new Button(() =>
             {
+                foreach (var node in catalog.nodes)
+                {
+                    if (node == null || node.kind != selected.kind) continue;
+                    Undo.RecordObject(node, "Set progression entry node");
+                    node.entryNode = node == selected; ProgressionCatalogSync.Save(node);
+                }
+                status.text = "게임에서 이 트리를 열면 선택 노드가 화면 중앙에 표시됩니다.";
+                ShowInspector();
+            }) { text = "이 노드를 시작점으로 지정" });
+            inspector.Add(new HelpBox("Entry Node: 처음 중앙에 놓을 노드\nTooltip Title / Tooltip Description: 호버 설명 (빈 값은 Title / Description 사용)\n자물쇠는 선행 조건 미완료를 나타내며, 재화 부족과 구분합니다.", HelpBoxMessageType.Info));
+            inspector.Add(new Button(() =>
+            {
                 Undo.RecordObject(selected, "Clear prerequisites"); selected.prerequisites.Clear();
                 ProgressionCatalogSync.Save(selected); ShowInspector();
             }) { text = "이 노드의 선행 연결 모두 해제" });

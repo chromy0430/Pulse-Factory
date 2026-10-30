@@ -65,7 +65,7 @@ namespace PulseFactory.EditorTools
                 var icon = new Image { sprite = node.icon, pickingMode = PickingMode.Ignore };
                 icon.style.height = 38;
                 card.Add(icon);
-                var label = new Label(node.title) { pickingMode = PickingMode.Ignore };
+                var label = new Label((node.entryNode ? "[시작] " : "") + node.title) { pickingMode = PickingMode.Ignore };
                 label.style.unityTextAlign = TextAnchor.MiddleCenter;
                 label.style.color = Color.white; card.Add(label);
                 card.tooltip = node.description + "\n" + (Catalog.Validate(node) ?? "드래그: 위치 변경 / 선택 후 연결 버튼: 선행 조건 지정");
