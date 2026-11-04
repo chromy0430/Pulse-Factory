@@ -56,7 +56,7 @@ public class Core : PowerNode
     protected override PulseData ProcessPulse(
         PulseData pulse)
     {
-        pulseVisual?.PlayPulse();
+        pulseVisual?.PlayPulse(pulse.Power);
         
         Debug.Log(
             $"[Core] Pulse #{pulse.Id} / Power {pulse.Power:F2}",

@@ -35,6 +35,14 @@ public class BuildingPulseVisual : MonoBehaviour
     [SerializeField]
     private float scaleMultiplier = 1.12f;
 
+    [BoxGroup("Scale Animation"), MinValue(0f), SerializeField]
+    [Tooltip("기본 전력 1을 넘는 전력 1당 더할 POP 배율입니다.")]
+    private float scalePerExtraPower = 0.4f;
+
+    [BoxGroup("Scale Animation"), MinValue(0f), SerializeField]
+    [Tooltip("증폭으로 추가할 수 있는 최대 배율입니다.")]
+    private float maxExtraScale = 0.8f;
+
     [BoxGroup("Scale Animation")]
     [LabelText("Scale Up Duration")]
     [SuffixLabel("sec", Overlay = true)]
@@ -117,14 +125,18 @@ public class BuildingPulseVisual : MonoBehaviour
     // Pulse
     // ============================================================
 
-    public void PlayPulse()
+    public void PlayPulse() => PlayPulse(1f);
+
+    public void PlayPulse(float receivedPower)
     {
-        PlayScaleAnimation();
+        if (!isActiveAndEnabled) return;
+        float bonus = Mathf.Clamp((receivedPower - 1f) * scalePerExtraPower, 0f, maxExtraScale);
+        PlayScaleAnimation(scaleMultiplier + bonus);
         PlayPopEffect();
     }
 
 
-    private void PlayScaleAnimation()
+    private void PlayScaleAnimation(float peakScale)
     {
         if (scaleTarget == null)
             return;
@@ -142,7 +154,7 @@ public class BuildingPulseVisual : MonoBehaviour
         scaleSequence.Append(
             scaleTarget.DOScale(
                 originalScale *
-                scaleMultiplier,
+                peakScale,
                 scaleUpDuration
             )
             .SetEase(scaleUpEase)

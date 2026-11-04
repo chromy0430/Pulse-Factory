@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec7b6f90ea185724fa5af7b60410f0d8, type: 3}
   m_Name: AmplifierPulse
   m_EditorClassIdentifier: Assembly-CSharp::AmplifyEffectSO
-  multiplier: 1.5
+  multiplier: 10

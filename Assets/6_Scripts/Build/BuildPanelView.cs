@@ -26,7 +26,7 @@ public sealed class BuildPanelView : MonoBehaviour
         panel.anchoredPosition = new Vector2(0f, HiddenY);
         panelGroup.interactable = false;
         panelGroup.blocksRaycasts = false;
-        SetStatus("B | BUILD MENU");
+        SetStatus("B 건설 · X 철거");
     }
 
     private void OnEnable()

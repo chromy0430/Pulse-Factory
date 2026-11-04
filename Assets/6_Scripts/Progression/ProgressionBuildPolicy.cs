@@ -13,7 +13,7 @@ namespace PulseFactory.Progression
             if (state == null || !state.isActiveAndEnabled || buildings == null || !isActiveAndEnabled) return true;
             int count = 0;
             foreach (Transform child in buildings)
-                if (child.GetComponent<BuildingRuntime>() != null) count++;
+                if (child.gameObject.activeSelf && child.GetComponent<BuildingRuntime>() != null) count++;
             int capacity = baseCapacity + Mathf.FloorToInt(state.Total(ProgressionEffect.Capacity));
             if (count >= capacity) reason = $"공장 수용량 {count}/{capacity}";
             return reason == null;

@@ -99,6 +99,8 @@ public abstract class PowerNode : MonoBehaviour
     public IReadOnlyList<PowerPortSlot> Ports =>
         ports;
 
+    public string DisplayName => Definition != null ? Definition.DisplayName : name;
+
     public int MaxInputs =>
         Definition != null
             ? Definition.MaxInputs
@@ -142,7 +144,8 @@ public abstract class PowerNode : MonoBehaviour
         PulseData processedPulse =
             ProcessPulse(pulse);
 
-        ForwardPulse(processedPulse);
+        if (processedPulse.TryGetOutgoing(out var outgoing))
+            ForwardPulse(outgoing);
     }
 
 

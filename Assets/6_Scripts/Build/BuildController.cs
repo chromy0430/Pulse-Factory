@@ -19,12 +19,13 @@ public sealed class BuildController : MonoBehaviour
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public BuildingDefinitionSO SelectedDefinition { get; private set; }
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public bool CanPlace { get; private set; }
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public string BuildMode =>
-        panel != null && panel.IsOpen ? "Menu" : SelectedDefinition != null ? "Factory" :
+        demolitionMode ? "Demolition" : panel != null && panel.IsOpen ? "Menu" : SelectedDefinition != null ? "Factory" :
         cables != null && cables.IsBuildMode ? "Cable" : "Idle";
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public Vector3 PreviewPosition { get; private set; }
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public string PlacementStatus { get; private set; }
     private BuildGhost ghost;
     private int selectionFrame;
+    private bool demolitionMode;
 
     private bool ValidateDefinition(BuildingDefinitionSO value) => value != null &&
         value.Prefab != null && value.Prefab.GetComponent<BuildingRuntime>() != null &&
@@ -63,11 +64,24 @@ public sealed class BuildController : MonoBehaviour
             ToggleMenu();
             return;
         }
+        if (keyboard != null && keyboard.xKey.wasPressedThisFrame)
+        {
+            bool enter = !demolitionMode;
+            CancelMode();
+            panel.SetOpen(false);
+            demolitionMode = enter;
+            return;
+        }
         if ((keyboard != null && keyboard.escapeKey.wasPressedThisFrame) ||
             (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame))
         {
             CancelMode();
             panel.SetOpen(false);
+            return;
+        }
+        if (demolitionMode)
+        {
+            UpdateDemolition();
             return;
         }
         if (SelectedDefinition == null || Mouse.current == null || ghost == null) return;
@@ -80,6 +94,11 @@ public sealed class BuildController : MonoBehaviour
         CanPlace = grid.CanPlace(position, SelectedDefinition.PlacementSize, out string reason);
         var progressionPolicy = GetComponent<PulseFactory.Progression.ProgressionBuildPolicy>();
         if (CanPlace && progressionPolicy != null) CanPlace = progressionPolicy.CanBuild(out reason);
+        if (CanPlace && !ConstructionReceipt.CanPay(SelectedDefinition.BuildCost, out var paymentReason))
+        {
+            CanPlace = false;
+            reason = paymentReason;
+        }
         PlacementStatus = reason;
         ghost.Refresh(grid, position, CanPlace);
         panel.SetStatus(SelectedDefinition.name + " | " + reason);
@@ -92,7 +111,7 @@ public sealed class BuildController : MonoBehaviour
         bool open = !panel.IsOpen;
         CancelMode();
         panel.SetOpen(open);
-        if (open) panel.SetStatus("Choose a building or cable | B / ESC to close");
+        if (open) panel.SetStatus("건물 또는 전선 선택 · X 철거 · B / ESC 닫기");
     }
 
     // Compatibility for existing callers; the dynamic menu sends the SO itself.
@@ -138,16 +157,45 @@ public sealed class BuildController : MonoBehaviour
         position = grid.Snap(position);
         Physics.SyncTransforms();
         if (!grid.CanPlace(position, SelectedDefinition.PlacementSize, out _)) return null;
-        GameObject instance = Instantiate(SelectedDefinition.Prefab, position, grid.Rotation, buildingRoot);
-        instance.name = SelectedDefinition.name;
+        if (!ConstructionReceipt.CanPay(SelectedDefinition.BuildCost, out var reason))
+        {
+            PlacementStatus = reason;
+            panel.SetStatus(reason);
+            return null;
+        }
+        var definition = SelectedDefinition;
+        GameObject instance = Instantiate(definition.Prefab, position, grid.Rotation, buildingRoot);
+        instance.name = definition.name;
         BuildingRuntime runtime = instance.GetComponent<BuildingRuntime>();
-        runtime.Initialize(SelectedDefinition);
+        runtime.Initialize(definition);
         Physics.SyncTransforms();
+        if (!ConstructionReceipt.Pay(instance, definition.BuildCost))
+        {
+            instance.SetActive(false);
+            Destroy(instance);
+            return null;
+        }
         return runtime;
+    }
+
+    private void UpdateDemolition()
+    {
+        var mouse = Mouse.current;
+        var target = mouse != null && !BuildPointer.IsOverUI()
+            ? DemolitionPicker.Pick(mainCamera, mouse.position.ReadValue()) : null;
+        if (!target || !target.Available)
+        {
+            panel.SetStatus("철거 · 건물 또는 전선을 가리키세요 · ESC 취소");
+            return;
+        }
+        string label = target.Cable ? "전선" : target.GetComponent<PowerNode>().DisplayName;
+        panel.SetStatus($"철거 · {label} · 환급 {target.Quote()} 크레딧 · 좌클릭 확정");
+        if (mouse.leftButton.wasPressedThisFrame) target.Demolish();
     }
 
     public void CancelMode()
     {
+        demolitionMode = false;
         SelectedDefinition = null;
         CanPlace = false;
         PlacementStatus = "";
@@ -158,7 +206,7 @@ public sealed class BuildController : MonoBehaviour
             ghost = null;
         }
         if (cables != null) cables.SetBuildMode(false);
-        if (panel != null) panel.SetStatus("B | BUILD MENU");
+        if (panel != null) panel.SetStatus("B 건설 · X 철거");
     }
 
     private void OnCableStatus(string status)

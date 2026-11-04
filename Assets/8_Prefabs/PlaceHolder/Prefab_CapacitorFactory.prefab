@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 2448880193172530100}
   - component: {fileID: 2623663401195506488}
   - component: {fileID: 8402737734565152470}
+  - component: {fileID: 6725674803422369736}
   m_Layer: 6
   m_Name: Prefab_CapacitorFactory
   m_TagString: Untagged
@@ -198,10 +199,24 @@ MonoBehaviour:
   scaleTarget: {fileID: 7820810229062718078}
   popEffect: {fileID: 226463685348149887}
   scaleMultiplier: 1
+  scalePerExtraPower: 0.4
+  maxExtraScale: 0.8
   scaleUpDuration: 0.08
   returnDuration: 0.12
   scaleUpEase: 6
   returnEase: 27
+--- !u!114 &6725674803422369736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1954214676692155143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6846cfba166510d459bf1e0206ac9d84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CapacitorCharge
 --- !u!1 &3320126175603570463
 GameObject:
   m_ObjectHideFlags: 0

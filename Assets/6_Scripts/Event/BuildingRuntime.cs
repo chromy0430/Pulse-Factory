@@ -45,7 +45,7 @@ public class BuildingRuntime : PowerNode
     {
         // 1. 공장에 전력 도착
         // 2. 시각적인 POP 반응
-        pulseVisual?.PlayPulse();
+        pulseVisual?.PlayPulse(pulse.Power);
 
         // 3. 공장의 실제 기능 실행
         if (definition == null)

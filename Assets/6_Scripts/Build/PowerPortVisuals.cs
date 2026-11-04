@@ -36,6 +36,11 @@ public sealed class PowerPortVisuals : MonoBehaviour
     private bool topologyDirty = true;
     private bool wasVisible;
     private int hovered = -1;
+    [SerializeField, Min(3f)] private float minimumPickRadiusPixels = 10f;
+    private readonly List<int> candidates = new(8);
+    private Vector2 holdPoint;
+    private bool holdCandidate;
+    private PowerPortFocusOverlay focus;
     private Bounds bounds;
     public bool IsReady => isActiveAndEnabled && controller != null && (presentation == PowerPortPresentation.Particles
         ? particleMaterial != null || particleTemplate != null : iconMaterial != null && fallbackShader != null);
@@ -66,6 +71,7 @@ public sealed class PowerPortVisuals : MonoBehaviour
     private void OnValidate() => topologyDirty = true;
     private void Release()
     {
+        focus?.Dispose(); focus = null;
         particles?.Dispose(); particles = null;
         rendererBackend?.Dispose();
         rendererBackend = null;
@@ -87,7 +93,7 @@ public sealed class PowerPortVisuals : MonoBehaviour
             }
         }
         data = new PowerPortRenderData[ports.Count];
-        hovered = -1;
+        ClearHover();
         topologyDirty = false;
         rendererBackend?.SetCount(ports.Count);
         particles?.SetCount(ports.Count);
@@ -98,7 +104,7 @@ public sealed class PowerPortVisuals : MonoBehaviour
     {
         if (!IsReady || !controller.IsBuildMode)
         {
-            if (wasVisible) { ClearHover(); particles?.Hide(); wasVisible = false; }
+            if (wasVisible) { ClearHover(); particles?.Hide(); focus?.Hide(); wasVisible = false; }
             return;
         }
         if (activePresentation != presentation) Release();
@@ -116,6 +122,23 @@ public sealed class PowerPortVisuals : MonoBehaviour
             rendererBackend?.Draw(controller.ViewCamera, data, bounds, Time.unscaledTime);
             particles?.Draw(data, bounds, Time.unscaledTime, controller.ViewCamera);
         }
+        focus ??= new PowerPortFocusOverlay();
+        int source = controller.SelectedPort != null ? ports.IndexOf(controller.SelectedPort) : -1;
+        ShowFocus(0, source, true);
+        ShowFocus(1, hovered, false);
+    }
+
+    private void ShowFocus(int slot, int index, bool source)
+    {
+        if (index < 0 || index >= ports.Count || !owners[index] || !ports[index].Anchor)
+        {
+            focus.Hide(slot);
+            return;
+        }
+        bool tooFar = !source && controller.SelectedPort?.Anchor != null &&
+            Vector3.Distance(controller.SelectedPort.Anchor.position, ports[index].Anchor.position) > controller.MaximumCableLength;
+        focus.Show(slot, controller.ViewCamera, owners[index], ports[index], MarkerPosition(index),
+            source || controller.SelectedSource == null, source ? 0 : candidates.Count, tooFar);
     }
 
     // Poll cached anchors/state for external movement or SO edits; no uploads when unchanged.
@@ -168,22 +191,24 @@ public sealed class PowerPortVisuals : MonoBehaviour
         }
     }
 
-    public void UpdatePointer(Vector2 screen, bool blockedByUI)
+    public void UpdatePointer(Vector2 screen, bool blockedByUI, bool cycle = false)
     {
         using (PickMarker.Auto())
         {
             if (topologyDirty) Rebuild();
-            int next = blockedByUI ? -1 : Pick(screen);
-            hovered = next;
+            if (blockedByUI) ClearHover();
+            else hovered = Pick(screen, cycle);
         }
     }
 
-    private int Pick(Vector2 screen)
+    private int Pick(Vector2 screen, bool cycle)
     {
+        candidates.Clear();
         var camera = controller.ViewCamera;
         if (camera == null || !camera.pixelRect.Contains(screen)) return -1;
         int result = -1;
         float nearest = float.MaxValue;
+        float closestDepth = float.MaxValue;
         for (int i = 0; i < ports.Count; i++)
         {
             if (!controller.CanSelectPort(owners[i], ports[i])) continue;
@@ -191,19 +216,24 @@ public sealed class PowerPortVisuals : MonoBehaviour
             Vector3 projected = camera.WorldToScreenPoint(center);
             if (projected.z < camera.nearClipPlane || projected.z > camera.farClipPlane) continue;
             float radius = Mathf.Abs(camera.WorldToScreenPoint(center + camera.transform.right * iconSize * 0.5f).x - projected.x);
-            // Include the base-to-animated sweep so lifting the icon cannot eject a stationary pointer.
-            Vector3 baseScreen = camera.WorldToScreenPoint(data[i].Center);
-            float minY = Mathf.Min(baseScreen.y, projected.y) - radius;
-            float maxY = Mathf.Max(baseScreen.y, projected.y) + radius;
-            if (Mathf.Abs(screen.x - projected.x) > radius || screen.y < minY || screen.y > maxY) continue;
-            Ray ray = camera.ScreenPointToRay(projected);
-            float distance = Vector3.Dot(center - ray.origin, ray.direction) - iconSize * 0.5f;
-            if (distance > 0 && Physics.Raycast(ray, distance,
-                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
-            float score = ((Vector2)projected - screen).sqrMagnitude;
-            if (score >= nearest) continue;
-            nearest = score; result = i;
+            radius = Mathf.Max(minimumPickRadiusPixels, radius);
+            Vector2 rest = camera.WorldToScreenPoint(data[i].Center);
+            Vector2 sweep = (Vector2)projected - rest;
+            float t = Mathf.Clamp01(Vector2.Dot(screen - rest, sweep) / Mathf.Max(sweep.sqrMagnitude, .0001f));
+            float score = (rest + sweep * t - screen).sqrMagnitude;
+            if (score > radius * radius) continue;
+            candidates.Add(i);
+            if (score > nearest || (Mathf.Approximately(score, nearest) && projected.z >= closestDepth)) continue;
+            nearest = score; closestDepth = projected.z; result = i;
         }
+        if (cycle && candidates.Count > 1)
+        {
+            int current = candidates.IndexOf(hovered >= 0 ? hovered : result);
+            holdPoint = screen; holdCandidate = true;
+            return candidates[(current + 1) % candidates.Count];
+        }
+        if (holdCandidate && (screen - holdPoint).sqrMagnitude <= 16f && candidates.Contains(hovered)) return hovered;
+        holdCandidate = false;
         return result;
     }
 
@@ -213,7 +243,7 @@ public sealed class PowerPortVisuals : MonoBehaviour
         if (index >= 0 && index < ports.Count) controller.SelectPort(owners[index], ports[index]);
     }
 
-    public void ClearHover() => hovered = -1;
+    public void ClearHover() { hovered = -1; candidates.Clear(); holdCandidate = false; }
     public Vector3 MarkerPosition(int index) => data[index].Center + Vector3.up * data[index].Offset(Time.unscaledTime);
     public PowerPortSlot PortAt(int index) => ports[index];
     public PowerNode OwnerAt(int index) => owners[index];

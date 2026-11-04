@@ -14,10 +14,14 @@ public class PowerConnectionController : MonoBehaviour
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] private PowerNode selectedSourceNode;
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] private PowerPortSlot selectedSourcePort;
     private int enabledFrame;
+    private PowerPortSlot quotedPort;
+    private int quotedPrice;
+    private bool quotedAffordable;
 
     public PowerNode SelectedSource => selectedSourceNode;
     public PowerPortSlot SelectedPort => selectedSourcePort;
     public Camera ViewCamera => mainCamera;
+    public float MaximumCableLength => cableDefinition != null ? cableDefinition.MaxLength : 0f;
     public string Status => selectedSourceNode == null
         ? "CABLE | Select an output port"
         : "CABLE | Select an input port";
@@ -40,7 +44,9 @@ public class PowerConnectionController : MonoBehaviour
         bool overUI = BuildPointer.IsOverUI();
         if (portVisuals != null && portVisuals.IsReady)
         {
-            portVisuals.UpdatePointer(Mouse.current.position.ReadValue(), overUI);
+            bool cycle = Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame;
+            portVisuals.UpdatePointer(Mouse.current.position.ReadValue(), overUI, cycle);
+            UpdatePriceHint();
             if (!overUI && Mouse.current.leftButton.wasPressedThisFrame)
                 portVisuals.SelectHovered();
         }
@@ -49,6 +55,24 @@ public class PowerConnectionController : MonoBehaviour
     }
 
     private void OnDisable() => SetBuildMode(false);
+
+    private void UpdatePriceHint()
+    {
+        int index = portVisuals.HoveredIndex;
+        if (selectedSourcePort == null || index < 0)
+        {
+            if (quotedPort != null) StatusChanged?.Invoke(Status);
+            quotedPort = null;
+            return;
+        }
+        var candidate = portVisuals.PortAt(index);
+        float length = Vector3.Distance(selectedSourcePort.Anchor.position, candidate.Anchor.position);
+        int price = cableDefinition.GetBuildCost(length);
+        bool affordable = price == 0 || CreditWallet.Instance && CreditWallet.Instance.CanSpend(price);
+        if (quotedPort == candidate && quotedPrice == price && quotedAffordable == affordable) return;
+        quotedPort = candidate; quotedPrice = price; quotedAffordable = affordable;
+        StatusChanged?.Invoke(affordable ? $"전선 설치 · {price} 크레딧" : $"크레딧 부족 · 전선 비용 {price}");
+    }
 
     public void SetBuildMode(bool value)
     {
@@ -94,18 +118,32 @@ public class PowerConnectionController : MonoBehaviour
             StatusChanged?.Invoke(Status);
             return true;
         }
+        float length = Vector3.Distance(selectedSourcePort.Anchor.position, port.Anchor.position);
+        int price = cableDefinition.GetBuildCost(length);
+        if (!ConstructionReceipt.CanPay(price, out string reason))
+        {
+            StatusChanged?.Invoke(reason);
+            return false;
+        }
         bool connected = selectedSourceNode.TryConnectTo(
             node, selectedSourcePort, port, cablePrefab, cableDefinition, cableRoot);
+        if (connected && !ConstructionReceipt.Pay(port.ConnectedCable.gameObject, price))
+        {
+            ConstructionReceipt.RemoveCable(port.ConnectedCable);
+            StatusChanged?.Invoke("전선 비용 결제 실패");
+            return false;
+        }
         if (connected)
             Debug.Log($"[Cable] {selectedSourceNode.name} ({selectedSourcePort.Position}) -> {node.name} ({port.Position})");
-        CancelCurrentConnection();
-        if (!connected)
+        if (connected) CancelCurrentConnection();
+        else
             StatusChanged?.Invoke($"Connection rejected. Max cable: {cableDefinition.MaxLength:0.0}m. Check ports and direction.");
         return connected;
     }
 
     public void CancelCurrentConnection()
     {
+        quotedPort = null;
         selectedSourceNode = null;
         selectedSourcePort = null;
         if (portVisuals != null) portVisuals.ClearHover();

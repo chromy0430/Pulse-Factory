@@ -21,10 +21,6 @@ public class AmplifyEffectSO : BuildingEffectSO
         BuildingRuntime building,
         ref PulseData pulse)
     {
-        pulse.Power *= multiplier;
-
-        Debug.Log(
-            $"[{building.name}] Pulse Power → {pulse.Power:F2}",
-            building);
+        pulse.BoostNextReceiver(pulse.BasePower * multiplier);
     }
 }
