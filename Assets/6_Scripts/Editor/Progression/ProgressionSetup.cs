@@ -78,7 +78,7 @@ namespace PulseFactory.EditorTools
             {
                 var runtime = new SerializedObject(root.GetComponent<BuildingRuntime>());
                 runtime.FindProperty("definition").objectReferenceValue = definition; runtime.ApplyModifiedPropertiesWithoutUndo();
-                var prefab = PrefabUtility.SaveAsPrefabAsset(root, "Assets/8_Prefabs/Build/Prefab_ResearchFactory.prefab");
+                var prefab = PrefabUtility.SaveAsPrefabAsset(root, "Assets/8_Prefabs/PlaceHolder/Prefab_ResearchFactory.prefab");
                 data.Update(); data.FindProperty("prefab").objectReferenceValue = prefab; data.ApplyModifiedPropertiesWithoutUndo();
             }
             finally { PrefabUtility.UnloadPrefabContents(root); }

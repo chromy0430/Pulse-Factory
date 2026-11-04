@@ -23,4 +23,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 117400cb921dfee4f8dbbf2484667c95, type: 2}
   showInBuildMenu: 1
   buildMenuOrder: 0
-  placementSize: {x: 1, y: 1}
+  placementSize: {x: 3.2, y: 3.5}

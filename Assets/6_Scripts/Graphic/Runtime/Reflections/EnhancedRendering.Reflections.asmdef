@@ -1,0 +1,4 @@
+{
+  "name": "EnhancedRendering.Reflections",
+  "references": ["EnhancedRendering.Core", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"]
+}

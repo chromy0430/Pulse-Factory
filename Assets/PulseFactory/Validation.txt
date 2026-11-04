@@ -1,0 +1,12 @@
+Core bottom=-2.384186E-07 centerXZ=0,0
+Research_Factory bottom=-1.192093E-07 centerXZ=0,-1.192093E-07
+Amplifier_Factory bottom=-1.192093E-07 centerXZ=0,-2.384186E-07
+Capacitor_Factory bottom=-1.192093E-07 centerXZ=0,0
+Hyperloop_Entrance bottom=0 centerXZ=0,-9.536743E-07
+Hyperloop_Passage bottom=0 centerXZ=0,-4.768372E-07
+Amplifier_Factory.fbx clips=1
+Capacitor_Factory.fbx clips=1
+Core.fbx clips=1
+Hyperloop_Entrance.fbx clips=1
+Hyperloop_Passage.fbx clips=1
+Research_Factory.fbx clips=1

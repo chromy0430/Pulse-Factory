@@ -7,13 +7,17 @@ public sealed class BuildGhost : MonoBehaviour
     private Mesh gridMesh;
     private Material validMaterial;
     private Material invalidMaterial;
-    private readonly Vector3[] vertices = new Vector3[84];
+    private Vector3[] vertices;
+    private int stepsX, stepsZ;
     private Vector3 lastPosition = new Vector3(float.PositiveInfinity, 0f, 0f);
 
-    public void Initialize(Vector2 footprint, Material valid, Material invalid)
+    public void Initialize(Vector2 footprint, Material valid, Material invalid, float cellSize = 0.1f)
     {
         validMaterial = valid;
         invalidMaterial = invalid;
+        stepsX = Mathf.Max(10, Mathf.CeilToInt(footprint.x / (2f * cellSize)) + 1);
+        stepsZ = Mathf.Max(10, Mathf.CeilToInt(footprint.y / (2f * cellSize)) + 1);
+        vertices = new Vector3[4 * (stepsX + stepsZ + 1)];
         var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cube.name = "Preview";
         cube.transform.SetParent(transform, false);
@@ -48,22 +52,24 @@ public sealed class BuildGhost : MonoBehaviour
         lastPosition = position;
         Vector3 offset = Quaternion.Inverse(grid.Rotation) * (position - grid.SurfaceCenter);
         Vector2 half = grid.HalfSize;
-        float radius = grid.CellSize * 10f;
-        float minX = Mathf.Max(-radius, -half.x - offset.x);
-        float maxX = Mathf.Min(radius, half.x - offset.x);
-        float minZ = Mathf.Max(-radius, -half.y - offset.z);
-        float maxZ = Mathf.Min(radius, half.y - offset.z);
+        float minX = Mathf.Max(-stepsX * grid.CellSize, -half.x - offset.x);
+        float maxX = Mathf.Min(stepsX * grid.CellSize, half.x - offset.x);
+        float minZ = Mathf.Max(-stepsZ * grid.CellSize, -half.y - offset.z);
+        float maxZ = Mathf.Min(stepsZ * grid.CellSize, half.y - offset.z);
         gridRenderer.enabled = minX <= maxX && minZ <= maxZ;
         if (!gridRenderer.enabled) return;
-        for (int i = 0; i <= 20; i++)
+        int index = 0;
+        for (int i = -stepsX; i <= stepsX; i++)
         {
-            float p = (i - 10) * grid.CellSize;
-            float x = Mathf.Clamp(p, minX, maxX);
-            float z = Mathf.Clamp(p, minZ, maxZ);
-            vertices[i * 4] = new Vector3(x, 0.015f, minZ);
-            vertices[i * 4 + 1] = new Vector3(x, 0.015f, maxZ);
-            vertices[i * 4 + 2] = new Vector3(minX, 0.015f, z);
-            vertices[i * 4 + 3] = new Vector3(maxX, 0.015f, z);
+            float x = Mathf.Clamp(i * grid.CellSize, minX, maxX);
+            vertices[index++] = new Vector3(x, 0.015f, minZ);
+            vertices[index++] = new Vector3(x, 0.015f, maxZ);
+        }
+        for (int i = -stepsZ; i <= stepsZ; i++)
+        {
+            float z = Mathf.Clamp(i * grid.CellSize, minZ, maxZ);
+            vertices[index++] = new Vector3(minX, 0.015f, z);
+            vertices[index++] = new Vector3(maxX, 0.015f, z);
         }
         gridMesh.vertices = vertices;
         gridMesh.RecalculateBounds();

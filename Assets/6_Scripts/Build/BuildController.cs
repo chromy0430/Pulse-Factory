@@ -124,7 +124,7 @@ public sealed class BuildController : MonoBehaviour
         }
         SelectedDefinition = definition;
         ghost = new GameObject("BuildGhost").AddComponent<BuildGhost>();
-        ghost.Initialize(definition.PlacementSize, validMaterial, invalidMaterial);
+        ghost.Initialize(definition.PlacementSize, validMaterial, invalidMaterial, grid.CellSize);
         ghost.gameObject.SetActive(false);
         panel.SetStatus(BuildMenuRules.Label(definition) + " | Move onto board");
     }

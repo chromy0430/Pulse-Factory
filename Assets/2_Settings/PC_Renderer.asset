@@ -82,7 +82,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   - {fileID: -4699000208590870631}
-  m_RendererFeatureMap: ad6b866f10d7b46c996774e734ccc9be
+  - {fileID: 8322443677038291494}
+  m_RendererFeatureMap: ad6b866f10d7b46c996774e734ccc9be262a10196e427f73
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -137,3 +138,19 @@ MonoBehaviour:
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1
+--- !u!114 &8322443677038291494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dbeea26d4c20c74ea62264441c4671a, type: 3}
+  m_Name: EnhancedRenderingFeature
+  m_EditorClassIdentifier: EnhancedRendering.Core::EnhancedRendering.EnhancedRenderingFeature
+  m_Active: 1
+  modules:
+  - {fileID: 11400000, guid: b3c71da9fd6373f46933f8c2c6318612, type: 2}
+  showInSceneView: 1

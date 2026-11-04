@@ -22,4 +22,4 @@ MonoBehaviour:
   effects: []
   showInBuildMenu: 0
   buildMenuOrder: 0
-  placementSize: {x: 1, y: 1}
+  placementSize: {x: 3.3, y: 3.3}

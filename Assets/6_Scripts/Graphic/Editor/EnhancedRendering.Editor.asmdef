@@ -1,0 +1,6 @@
+{
+  "name": "EnhancedRendering.Editor",
+  "rootNamespace": "EnhancedRendering.Editor",
+  "references": ["EnhancedRendering.Core", "EnhancedRendering.Bloom", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
+  "includePlatforms": ["Editor"]
+}

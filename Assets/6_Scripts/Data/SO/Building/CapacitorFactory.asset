@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb207f006c329ec469a1d4bb44a3d645, type: 3}
+  m_Name: CapacitorFactory
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinitionSO
+  id: CapacitorFactory
+  displayName: "\uCD95\uC804 \uACF5\uC7A5"
+  icon: {fileID: 0}
+  buildCost: 100
+  prefab: {fileID: 1954214676692155143, guid: 05f8ac462dee55740a7e5611a45e0dea, type: 3}
+  maxInputs: 1
+  maxOutputs: 2
+  effects: []
+  showInBuildMenu: 1
+  buildMenuOrder: 11
+  placementSize: {x: 2.9, y: 3.2}

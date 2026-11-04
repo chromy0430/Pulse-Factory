@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class PowerBoardVisual : MonoBehaviour
 {
-    private static readonly int EmissionPowerID =
-        Shader.PropertyToID("_EmissionPower");
+    private static readonly int EmissionColorID =
+        Shader.PropertyToID("_EmissionColor"); //("_EmissionPower");
+    
+    [SerializeField]
+    private Color baseEmissionColor = Color.white;
 
     [Title("Power Board Visual")]
 
@@ -93,9 +96,14 @@ public class PowerBoardVisual : MonoBehaviour
     {
         propertyBlock =
             new MaterialPropertyBlock();
-
+        
         if (targetRenderer == null)
             targetRenderer = GetComponent<Renderer>();
+        
+        var material = targetRenderer != null ? targetRenderer.sharedMaterial : null;
+        
+        if (material != null && material.HasProperty(EmissionColorID))
+            baseEmissionColor = material.GetColor(EmissionColorID);
 
         SetEmissionPower(
             minEmissionPower);
@@ -189,14 +197,8 @@ public class PowerBoardVisual : MonoBehaviour
         if (targetRenderer == null)
             return;
 
-        targetRenderer.GetPropertyBlock(
-            propertyBlock);
-
-        propertyBlock.SetFloat(
-            EmissionPowerID,
-            value);
-
-        targetRenderer.SetPropertyBlock(
-            propertyBlock);
+        targetRenderer.GetPropertyBlock(propertyBlock);
+        propertyBlock.SetColor(EmissionColorID, baseEmissionColor * value);
+        targetRenderer.SetPropertyBlock(propertyBlock);
     }
 }

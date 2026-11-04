@@ -22,6 +22,9 @@ public class PowerCable : MonoBehaviour
     [SerializeField]
     private Transform pulseVisual;
 
+    [BoxGroup("References"), SerializeField]
+    [Tooltip("선택 사항. 중앙을 원점으로 길이와 지름을 1로 맞춘 모델입니다. +Z가 도착 포트를 향합니다.")]
+    private Transform modelSpan;
 
     // ============================================================
     // Runtime
@@ -54,7 +57,6 @@ public class PowerCable : MonoBehaviour
     [LabelText("Target Port")]
     public PowerPortSlot TargetPort { get; private set; }
 
-
     [BoxGroup("Runtime")]
     [ShowInInspector]
     [ReadOnly]
@@ -76,7 +78,6 @@ public class PowerCable : MonoBehaviour
         }
     }
 
-
     [BoxGroup("Runtime")]
     [ShowInInspector]
     [ReadOnly]
@@ -86,7 +87,6 @@ public class PowerCable : MonoBehaviour
             ? Definition.GetBuildCost(Length)
             : 0;
 
-
     [BoxGroup("Runtime")]
     [ShowInInspector]
     [ReadOnly]
@@ -94,14 +94,12 @@ public class PowerCable : MonoBehaviour
     public bool IsTransmitting =>
         pulseRoutine != null;
 
-
     [BoxGroup("Runtime")]
     [ShowInInspector]
     [ReadOnly]
     [LabelText("Queued Pulses")]
     private int QueuedPulseCount =>
         pulseQueue.Count;
-
 
     // ============================================================
     // Runtime Data
@@ -112,7 +110,6 @@ public class PowerCable : MonoBehaviour
 
     private Coroutine pulseRoutine;
 
-
     // ============================================================
     // Unity
     // ============================================================
@@ -122,7 +119,6 @@ public class PowerCable : MonoBehaviour
         lineRenderer =
             GetComponent<LineRenderer>();
     }
-
 
     private void Awake()
     {
@@ -137,7 +133,6 @@ public class PowerCable : MonoBehaviour
             pulseVisual.gameObject.SetActive(false);
         }
     }
-
 
     private void OnDestroy()
     {
@@ -156,7 +151,6 @@ public class PowerCable : MonoBehaviour
                 this);
         }
     }
-
 
     // ============================================================
     // Initialize
@@ -181,26 +175,15 @@ public class PowerCable : MonoBehaviour
         RefreshVisual();
     }
 
-
     private void ApplyDefinition()
     {
-        if (Definition == null ||
-            lineRenderer == null)
-            return;
+        if (Definition == null || lineRenderer == null) return;
 
-        lineRenderer.startWidth =
-            Definition.CableWidth;
-
-        lineRenderer.endWidth =
-            Definition.CableWidth;
-
+        lineRenderer.startWidth = Definition.CableWidth;
+        lineRenderer.endWidth = Definition.CableWidth;
         if (Definition.CableMaterial != null)
-        {
-            lineRenderer.sharedMaterial =
-                Definition.CableMaterial;
-        }
+            lineRenderer.sharedMaterial = Definition.CableMaterial;
     }
-
 
     // ============================================================
     // Cable Visual
@@ -208,24 +191,32 @@ public class PowerCable : MonoBehaviour
 
     public void RefreshVisual()
     {
-        if (lineRenderer == null ||
-            SourcePort?.Anchor == null ||
-            TargetPort?.Anchor == null)
-        {
-            return;
-        }
+        if (lineRenderer == null || Definition == null ||
+            SourcePort?.Anchor == null || TargetPort?.Anchor == null) return;
 
+        Vector3 start = SourcePort.Anchor.position;
+        Vector3 end = TargetPort.Anchor.position;
         lineRenderer.positionCount = 2;
+        lineRenderer.SetPosition(0, start);
+        lineRenderer.SetPosition(1, end);
+        lineRenderer.enabled = modelSpan == null;
+        if (modelSpan == null) return;
 
-        lineRenderer.SetPosition(
-            0,
-            SourcePort.Anchor.position);
+        Transform parent = modelSpan.parent;
+        Vector3 a = parent.InverseTransformPoint(start);
+        Vector3 b = parent.InverseTransformPoint(end);
+        Vector3 delta = b - a;
+        bool visible = delta.sqrMagnitude > 1e-12f;
+        modelSpan.gameObject.SetActive(visible);
+        if (!visible) return;
 
-        lineRenderer.SetPosition(
-            1,
-            TargetPort.Anchor.position);
+        Quaternion rotation = Quaternion.FromToRotation(Vector3.forward, delta.normalized);
+        modelSpan.SetLocalPositionAndRotation((a + b) * 0.5f, rotation);
+        float width = Definition.CableWidth;
+        float xScale = parent.TransformVector(rotation * Vector3.right).magnitude;
+        float yScale = parent.TransformVector(rotation * Vector3.up).magnitude;
+        modelSpan.localScale = new Vector3(width / xScale, width / yScale, delta.magnitude);
     }
-
 
     // ============================================================
     // Pulse
@@ -250,7 +241,6 @@ public class PowerCable : MonoBehaviour
         }
     }
 
-
     private IEnumerator TransmitQueueRoutine()
     {
         while (pulseQueue.Count > 0)
@@ -264,7 +254,6 @@ public class PowerCable : MonoBehaviour
 
         pulseRoutine = null;
     }
-
 
     private IEnumerator TransmitSinglePulse(
         PulseData pulse)

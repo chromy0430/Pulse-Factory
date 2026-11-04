@@ -1,0 +1,5 @@
+{
+  "name": "EnhancedRendering.Atmosphere",
+  "rootNamespace": "EnhancedRendering.Atmosphere",
+  "references": ["EnhancedRendering.Core", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "EnhancedRendering.Atmosphere.Editor",
+  "references": ["EnhancedRendering.Core", "EnhancedRendering.Atmosphere", "EnhancedRendering.Editor", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
+  "includePlatforms": ["Editor"]
+}

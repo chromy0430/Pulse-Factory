@@ -112,6 +112,38 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2322732160549340678
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1677874177045339949}
+  m_Layer: 0
+  m_Name: CableModel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1677874177045339949
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2322732160549340678}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1334295404032117390}
+  m_Father: {fileID: 6804729569897018597}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6907440775801165841
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,6 +176,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4115615849950520824}
+  - {fileID: 1677874177045339949}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &1795276560634852441
@@ -270,3 +303,78 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerCable
   lineRenderer: {fileID: 1795276560634852441}
   pulseVisual: {fileID: 4115615849950520824}
+  modelSpan: {fileID: 1677874177045339949}
+--- !u!1001 &1389056093989531767
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1677874177045339949}
+    m_Modifications:
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.1206719
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.1206719
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.16666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.49999994
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 759249188677705795, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+      propertyPath: m_Name
+      value: Subsea_Cable
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+--- !u!4 &1334295404032117390 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 126863514849721081, guid: 2f019ac4a6ec6f24a83dd1064a9ef9e8, type: 3}
+  m_PrefabInstance: {fileID: 1389056093989531767}
+  m_PrefabAsset: {fileID: 0}

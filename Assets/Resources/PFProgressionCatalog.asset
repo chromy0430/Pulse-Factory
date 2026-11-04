@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: PFProgressionCatalog
   m_EditorClassIdentifier: Assembly-CSharp::PulseFactory.Progression.ProgressionCatalogSO
   nodes:
+  - {fileID: 11400000, guid: 42a82db735a17ae4a94131a1ae5bd99b, type: 2}
   - {fileID: 11400000, guid: 4651348959f347d458c180ff136aa114, type: 2}
   - {fileID: 11400000, guid: 7c8eb9767476c8c409d283c4fec06667, type: 2}
   - {fileID: 11400000, guid: acb664ed8f54d25449aceba63b77cf84, type: 2}
