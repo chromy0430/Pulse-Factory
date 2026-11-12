@@ -24,30 +24,5 @@ Shader "PulseFactory/UnifiedModel" {
  return UniversalFragmentPBR(d,s);
  }
  ENDHLSL }
- Pass
- {
-  Name "DepthOnly"
-  Tags { "LightMode"="DepthOnly" }
-  ZWrite On ColorMask R
-  HLSLPROGRAM
-  #pragma vertex DepthOnlyVertex
-  #pragma fragment DepthOnlyFragment
-  #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
-  ENDHLSL
- }
- Pass
- {
-  Name "DepthNormals"
-  Tags { "LightMode"="DepthNormals" }
-  ZWrite On
-  HLSLPROGRAM
-  #pragma target 3.5
-  #pragma vertex DepthNormalsVertex
-  #pragma fragment DepthNormalsFragment
-  #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
-  #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
-  #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
-  ENDHLSL
- }
  }
 }

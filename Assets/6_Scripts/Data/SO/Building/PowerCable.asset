@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerCableDefinitionSO
   baseCost: 10
   costPerMeter: 0
-  maxLength: 2
+  maxLength: 5
   pulseSpeed: 5
   cableWidth: 0.08
   cableMaterial: {fileID: 2100000, guid: 7666a509e1cd7494aa5a90152685cae7, type: 2}

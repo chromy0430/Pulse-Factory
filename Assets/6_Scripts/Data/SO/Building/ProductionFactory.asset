@@ -21,4 +21,6 @@ MonoBehaviour:
   maxOutputs: 2
   effects:
   - {fileID: 11400000, guid: ae78e71ccc970f949936044e6af0203c, type: 2}
-  placementSize: {x: 1, y: 1}
+  showInBuildMenu: 1
+  buildMenuOrder: 0
+  placementSize: {x: 4.2, y: 6.7}
