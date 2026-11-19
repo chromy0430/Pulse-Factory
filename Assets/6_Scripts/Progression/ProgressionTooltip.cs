@@ -33,6 +33,7 @@ namespace PulseFactory.Progression
         }
         public void Show(Object source, ProgressionNodeSO value, ProgressionState progress, Vector2 screenPoint)
         {
+            if (owner == source && Visible) { Place(screenPoint); return; }
             owner = source; node = value; state = progress; screenPosition = screenPoint;
             gameObject.SetActive(true); transform.SetAsLastSibling();
             Refresh(); scroll.verticalNormalizedPosition = 1;

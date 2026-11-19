@@ -6,10 +6,10 @@ namespace PulseFactory.Progression
     public sealed class ProgressionMapViewport
     {
         public static readonly Vector2 NodeSize = new(160, 156);
-        private readonly ScrollRect scroll;
+        private readonly ProgressionMapScroll scroll;
         public Vector2 Origin { get; private set; }
         public float Zoom { get; set; } = 1;
-        public ProgressionMapViewport(ScrollRect scroll) => this.scroll = scroll;
+        public ProgressionMapViewport(ProgressionMapScroll scroll) => this.scroll = scroll;
         public Vector2 Center
         {
             get
@@ -38,7 +38,7 @@ namespace PulseFactory.Progression
         {
             Vector2 offset = (position - Origin) * Zoom;
             Vector2 half = scroll.viewport.rect.size * .5f;
-            scroll.StopMovement();
+            scroll.CancelCoast();
             scroll.content.anchoredPosition = new Vector2(half.x - offset.x, offset.y - half.y);
         }
     }

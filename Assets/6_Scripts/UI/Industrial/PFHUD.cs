@@ -49,7 +49,7 @@ namespace PulseFactory.UI
                 { var t = pc != null ? pc.Find(i == 0 ? "Research" : "Traits") : null; if (t != null) { oldShortcuts[i] = t.gameObject; t.gameObject.SetActive(false); } }
             }
             gameObject.AddComponent<PFBuildPresentation>().Initialize(build, panel);
-            canvas.gameObject.AddComponent<CablePopTooltip>().Initialize((RectTransform)canvas.transform, build);
+            canvas.gameObject.AddComponent<FactoryPopTooltip>().Initialize((RectTransform)canvas.transform, build);
         }
         private void Create()
         {

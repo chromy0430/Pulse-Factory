@@ -12,7 +12,7 @@ namespace PulseFactory.Progression
         public TMP_FontAsset font;
         public static bool IsOpen { get; private set; }
         private RectTransform canvasRoot, overlay, content;
-        private UnityEngine.UI.ScrollRect scroll;
+        private ProgressionMapScroll scroll;
         private TextMeshProUGUI balance, detail;
         private UnityEngine.UI.Button purchase, researchTab, traitTab;
         private TextMeshProUGUI mapTitle, zoomLabel;
@@ -104,7 +104,7 @@ namespace PulseFactory.Progression
             PFUI.Stretch(viewport,Vector2.zero,Vector2.one,new Vector2(8,96),new Vector2(-8,-58));
             var grid=PFUI.Box(viewport,"Grid");grid.type=UnityEngine.UI.Image.Type.Tiled;
             viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
-            scroll=viewport.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
+            scroll=viewport.gameObject.AddComponent<ProgressionMapScroll>();
             scroll.viewport=viewport;scroll.horizontal=scroll.vertical=true;
             scroll.movementType=UnityEngine.UI.ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=0;
             viewport.gameObject.AddComponent<PFMapZoom>().owner=this;
@@ -115,7 +115,7 @@ namespace PulseFactory.Progression
             overview.gameObject.AddComponent<PFMapOverview>().owner=this;
             var tooltipRect=PFUI.Rect("NodeTooltip",viewport,Vector2.zero,Vector2.one);
             tooltip=tooltipRect.gameObject.AddComponent<ProgressionTooltip>();tooltip.Initialize(viewport);
-            scroll.onValueChanged.AddListener(_=>tooltip.Hide());
+            scroll.Tooltip = tooltip;
             detail=PFUI.Text("Detail",overlay,"노드를 선택하세요.",Vector2.zero,Vector2.zero,15);
             PFUI.Stretch(detail.rectTransform,Vector2.zero,new Vector2(1,0),new Vector2(20,20),new Vector2(-410,88));
             detail.textWrappingMode=TextWrappingModes.Normal;
@@ -177,12 +177,18 @@ namespace PulseFactory.Progression
             {
                 if (node == null || node.kind != kind) continue;
                 var button = ProgressionUIFactory.Button("Node-" + node.id, content, node.title,
-                    node.position - origin, ProgressionMapViewport.NodeSize, () => { selected = node; RefreshState(); });
+                    node.position - origin, ProgressionMapViewport.NodeSize, () => FocusNode(node));
                 var view = button.gameObject.AddComponent<ProgressionNodeView>();
                 view.Initialize(node, state, tooltip, scroll); cards[node] = view;
             }
             if (selected != null && !cards.ContainsKey(selected)) selected = null;
             map.CenterOn(center);
+            RefreshState();
+        }
+        private void FocusNode(ProgressionNodeSO node)
+        {
+            selected = node;
+            CenterMap(node.position + ProgressionMapViewport.NodeSize * .5f);
             RefreshState();
         }
         public void RefreshState()

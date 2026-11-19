@@ -18,6 +18,14 @@ public class BuildingRuntime : PowerNode
     [SerializeField]
     private BuildingDefinitionSO definition;
 
+    // Zero assigns POP by the factory's position, from left to right.
+    private int popNumber;
+    public int PopNumber
+    {
+        get => popNumber;
+        set => popNumber = Mathf.Clamp(value, 0, 5);
+    }
+
     public void Initialize(BuildingDefinitionSO value)
     {
         definition = value;
@@ -58,7 +66,7 @@ public class BuildingRuntime : PowerNode
     {
         // 1. 공장에 전력 도착
         // 2. 시각적인 POP 반응
-        GameSounds.Pop(this, pulse.ArrivalPop);
+        GameSounds.Pop(this);
         pulseVisual?.PlayPulse(pulse.Power);
 
         // 3. 공장의 실제 기능 실행

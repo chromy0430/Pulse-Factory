@@ -13,13 +13,13 @@ namespace PulseFactory.Progression
         private ProgressionNodeSO node;
         private ProgressionState state;
         private ProgressionTooltip tooltip;
-        private ScrollRect map;
+        private ProgressionMapScroll map;
         private GameObject icon,lockIcon;
         private Image badge;
         private TextMeshProUGUI cost,level;
         private bool dragging,selected;
         public bool Locked=>lockIcon!=null&&lockIcon.activeSelf;
-        public void Initialize(ProgressionNodeSO value,ProgressionState progress,ProgressionTooltip tip,ScrollRect scroll)
+        public void Initialize(ProgressionNodeSO value,ProgressionState progress,ProgressionTooltip tip,ProgressionMapScroll scroll)
         {
             node=value;state=progress;tooltip=tip;map=scroll;
             GetComponent<Image>().color=Color.clear;
@@ -51,9 +51,13 @@ namespace PulseFactory.Progression
             if(PFUI.Theme!=null)cost.color=complete?PFUI.Theme.mint:locked?PFUI.Theme.muted:PFUI.Theme.gold;
         }
         private void OnDisable(){if(tooltip!=null)tooltip.Hide(this);dragging=false;}
-        public void OnPointerEnter(PointerEventData e){if(!dragging&&!e.dragging)tooltip.Show(this,node,state,e.position);}
+        public void Hover(Vector2 position)
+        {
+            if (!dragging && !map.Panning) tooltip.Show(this, node, state, position);
+        }
+        public void OnPointerEnter(PointerEventData e) => Hover(e.position);
         public void OnPointerExit(PointerEventData e)=>tooltip.Hide(this);
-        public void OnPointerMove(PointerEventData e){if(!dragging)tooltip.Move(this,e.position);}
+        public void OnPointerMove(PointerEventData e) => Hover(e.position);
         public void OnSelect(BaseEventData e){if(e is PointerEventData)return;tooltip.Show(this,node,state,RectTransformUtility.WorldToScreenPoint(null,transform.position));}
         public void OnDeselect(BaseEventData e)=>tooltip.Hide(this);
         public void OnInitializePotentialDrag(PointerEventData e)=>map.OnInitializePotentialDrag(e);

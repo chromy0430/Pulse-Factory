@@ -2,8 +2,11 @@ using UnityEngine;
 
 public sealed class BuildGhost : MonoBehaviour
 {
-    private MeshRenderer body;
+    private BuildGhostModel body;
     private MeshRenderer gridRenderer;
+    private MaterialPropertyBlock gridTint;
+    private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+    private Material gridMaterial;
     private Mesh gridMesh;
     private Material validMaterial;
     private Material invalidMaterial;
@@ -11,24 +14,20 @@ public sealed class BuildGhost : MonoBehaviour
     private int stepsX, stepsZ;
     private Vector3 lastPosition = new Vector3(float.PositiveInfinity, 0f, 0f);
 
-    public void Initialize(Vector2 footprint, Material valid, Material invalid, float cellSize = 0.1f)
+    public void Initialize(BuildingDefinitionSO definition, Material valid, Material invalid, float cellSize = 0.1f)
     {
+        Vector2 footprint = definition.PlacementSize;
+        gridTint = new MaterialPropertyBlock();
         validMaterial = valid;
         invalidMaterial = invalid;
         stepsX = Mathf.Max(10, Mathf.CeilToInt(footprint.x / (2f * cellSize)) + 1);
         stepsZ = Mathf.Max(10, Mathf.CeilToInt(footprint.y / (2f * cellSize)) + 1);
         vertices = new Vector3[4 * (stepsX + stepsZ + 1)];
-        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube.name = "Preview";
-        cube.transform.SetParent(transform, false);
-        cube.transform.localPosition = Vector3.up * 0.5f;
-        cube.transform.localScale = new Vector3(footprint.x, 1f, footprint.y);
-        var collider = cube.GetComponent<Collider>();
-        collider.enabled = false;
-        Destroy(collider);
-        body = cube.GetComponent<MeshRenderer>();
-        body.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        body.receiveShadows = false;
+        var preview = new GameObject("Preview");
+        preview.transform.SetParent(transform, false);
+        body = preview.AddComponent<BuildGhostModel>();
+        body.Build(definition.Prefab);
+        body.SetTint(valid);
         var grid = new GameObject("LocalGrid", typeof(MeshFilter), typeof(MeshRenderer));
         grid.transform.SetParent(transform, false);
         gridMesh = new Mesh { name = "Build preview grid" };
@@ -39,15 +38,25 @@ public sealed class BuildGhost : MonoBehaviour
         gridMesh.SetIndices(indices, MeshTopology.Lines, 0);
         grid.GetComponent<MeshFilter>().sharedMesh = gridMesh;
         gridRenderer = grid.GetComponent<MeshRenderer>();
-        gridRenderer.sharedMaterial = valid;
         gridRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
 
     public void Refresh(BuildGrid grid, Vector3 position, bool valid)
     {
         transform.SetPositionAndRotation(position, grid.Rotation);
-        body.sharedMaterial = valid ? validMaterial : invalidMaterial;
-        gridRenderer.sharedMaterial = body.sharedMaterial;
+        var material = valid ? validMaterial : invalidMaterial;
+        body.SetTint(material);
+        if (gridMaterial != material)
+        {
+            gridMaterial = material;
+            gridRenderer.sharedMaterial = material;
+            if (material && material.HasProperty(BaseColor))
+            {
+                var color = material.GetColor(BaseColor) * .42f;
+                gridTint.SetColor(BaseColor, color);
+                gridRenderer.SetPropertyBlock(gridTint);
+            }
+        }
         if (position == lastPosition) return;
         lastPosition = position;
         Vector3 offset = Quaternion.Inverse(grid.Rotation) * (position - grid.SurfaceCenter);

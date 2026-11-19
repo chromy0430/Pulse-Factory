@@ -21,16 +21,6 @@ public struct PulseData
         Power = power;
     }
 
-    // Delivery metadata applies only to this hop. TryGetOutgoing constructs a fresh pulse.
-    public int ArrivalPop { get; private set; }
-
-    public PulseData WithArrivalPop(int number)
-    {
-        var delivery = this;
-        delivery.ArrivalPop = number;
-        return delivery;
-    }
-
     public void Hold() => held = true;
 
     public void BoostNextReceiver(float power)

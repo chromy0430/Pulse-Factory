@@ -7,30 +7,30 @@ using UnityEngine.UI;
 
 namespace PulseFactory.UI
 {
-    public sealed class CablePopTooltip : MonoBehaviour
+    public sealed class FactoryPopTooltip : MonoBehaviour
     {
         private readonly Image[] choices = new Image[6];
         private RectTransform root;
         private RectTransform panel;
         private BuildController build;
-        private PowerCable cable;
+        private BuildingRuntime factory;
         private Camera view;
         private Vector3 pickedLocal;
-        private TextMeshProUGUI route;
+        private TextMeshProUGUI factoryName;
 
         public void Initialize(RectTransform canvas, BuildController controller)
         {
             root = canvas;
             build = controller;
             view = Camera.main;
-            panel = PFUI.Rect("CablePopPanel", root, Vector2.zero, new Vector2(328, 136));
+            panel = PFUI.Rect("FactoryPopPanel", root, Vector2.zero, new Vector2(328, 136));
             panel.pivot = new Vector2(0, 1);
             PFUI.Box(panel);
-            PFUI.Text("Title", panel, "전선 POP 효과음", new Vector2(14, 8), new Vector2(245, 33), 21);
+            PFUI.Text("Title", panel, "공장 POP 효과음", new Vector2(14, 8), new Vector2(245, 33), 21);
             PFUI.Button("Close", panel, "×", new Vector2(278, 8), new Vector2(38, 32), Close);
-            route = PFUI.Text("Route", panel, "", new Vector2(14, 45), new Vector2(300, 28), 16);
-            route.textWrappingMode = TextWrappingModes.NoWrap;
-            route.overflowMode = TextOverflowModes.Ellipsis;
+            factoryName = PFUI.Text("Route", panel, "", new Vector2(14, 45), new Vector2(300, 28), 16);
+            factoryName.textWrappingMode = TextWrappingModes.NoWrap;
+            factoryName.overflowMode = TextOverflowModes.Ellipsis;
             for (int i = 0; i < choices.Length; i++)
             {
                 int number = i;
@@ -63,13 +63,13 @@ namespace PulseFactory.UI
                 else OpenAt(pointer);
             }
             if (!panel.gameObject.activeSelf) return;
-            if (!cable || !cable.isActiveAndEnabled || !cable.TargetNode || !cable.SourceNode)
+            if (!factory || !factory.isActiveAndEnabled)
             {
                 Close();
                 return;
             }
 
-            Vector3 screen = view.WorldToScreenPoint(cable.transform.TransformPoint(pickedLocal));
+            Vector3 screen = view.WorldToScreenPoint(factory.transform.TransformPoint(pickedLocal));
             if (screen.z < view.nearClipPlane || !view.pixelRect.Contains(screen)) { Close(); return; }
             RectTransformUtility.ScreenPointToLocalPointInRectangle(root, screen, null, out Vector2 local);
             var bounds = root.rect;
@@ -80,11 +80,18 @@ namespace PulseFactory.UI
 
         private void OpenAt(Vector2 pointer)
         {
-            var hit = PowerCablePicker.Pick(view, pointer, float.PositiveInfinity, out Vector3 point);
-            if (!hit || !(hit.TargetNode is BuildingRuntime)) { Close(); return; }
-            cable = hit;
-            pickedLocal = cable.transform.InverseTransformPoint(point);
-            route.text = hit.SourceNode.DisplayName + " → " + hit.TargetNode.DisplayName;
+            if (!view.pixelRect.Contains(pointer) ||
+                !Physics.Raycast(view.ScreenPointToRay(pointer), out var hit, view.farClipPlane,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                Close();
+                return;
+            }
+
+            factory = hit.collider.GetComponentInParent<BuildingRuntime>();
+            if (!factory || !factory.isActiveAndEnabled) { Close(); return; }
+            pickedLocal = factory.transform.InverseTransformPoint(hit.point);
+            factoryName.text = factory.DisplayName;
             panel.gameObject.SetActive(true);
             panel.SetAsLastSibling();
             RefreshSelection();
@@ -92,20 +99,20 @@ namespace PulseFactory.UI
 
         private void Choose(int number)
         {
-            if (!cable || !(cable.TargetNode is BuildingRuntime target)) { Close(); return; }
-            cable.PopNumber = number;
-            GameSounds.Pop(target, number);
+            if (!factory || !factory.isActiveAndEnabled) { Close(); return; }
+            factory.PopNumber = number;
+            GameSounds.Pop(factory);
             RefreshSelection();
         }
 
         private void RefreshSelection()
         {
-            for (int i = 0; i < choices.Length; i++) PFUI.State(choices[i], cable.PopNumber == i);
+            for (int i = 0; i < choices.Length; i++) PFUI.State(choices[i], factory.PopNumber == i);
         }
 
         private void Close()
         {
-            cable = null;
+            factory = null;
             if (panel && panel.gameObject.activeSelf) panel.gameObject.SetActive(false);
         }
 

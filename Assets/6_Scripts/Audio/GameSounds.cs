@@ -28,8 +28,9 @@ namespace PulseFactory.Audio
         public static void Register(BuildingRuntime factory) => factories.Add(factory);
         public static void Unregister(BuildingRuntime factory) => factories.Remove(factory);
 
-        public static void Pop(BuildingRuntime factory, int overrideNumber)
+        public static void Pop(BuildingRuntime factory)
         {
+            int overrideNumber = factory.PopNumber;
             if (overrideNumber >= 1 && overrideNumber <= pops.Length)
             {
                 Play(pops[overrideNumber - 1]);

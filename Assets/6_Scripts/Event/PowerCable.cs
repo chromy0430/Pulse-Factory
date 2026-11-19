@@ -96,14 +96,6 @@ public class PowerCable : MonoBehaviour
     private int QueuedPulseCount =>
         pulseQueue.Count;
 
-    // Zero follows the receiving factory's automatic POP assignment.
-    private int popNumber;
-    public int PopNumber
-    {
-        get => popNumber;
-        set => popNumber = Mathf.Clamp(value, 0, 5);
-    }
-
     private void OnEnable() => PowerCablePicker.Register(this);
     private void OnDisable() => PowerCablePicker.Unregister(this);
 
@@ -257,7 +249,7 @@ public class PowerCable : MonoBehaviour
         GameSounds.Play(GameSounds.Travel);
         if (pulseVisual == null)
         {
-            TargetNode.ReceivePulse(pulse.WithArrivalPop(PopNumber));
+            TargetNode.ReceivePulse(pulse);
             yield break;
         }
 
@@ -287,6 +279,6 @@ public class PowerCable : MonoBehaviour
 
         pulseVisual.gameObject.SetActive(false);
 
-        TargetNode.ReceivePulse(pulse.WithArrivalPop(PopNumber));
+        TargetNode.ReceivePulse(pulse);
     }
 }
