@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ce18aa929e52342ada731dbb60ffc6, type: 3}
+  m_Name: PFUITheme
+  m_EditorClassIdentifier: Assembly-CSharp::PulseFactory.UI.PFUITheme
+  font: {fileID: 11400000, guid: ff2bcc44bb4499048a8ef70f1ed7ffbc, type: 2}
+  sprites:
+  - key: Amplifier
+    sprite: {fileID: 21300000, guid: ee8ab341432ba2543909770c13da8b17, type: 3}
+  - key: ArrowLeft
+    sprite: {fileID: 21300000, guid: 1deed26a8d85b4a409a4f1558b0971b4, type: 3}
+  - key: ArrowRight
+    sprite: {fileID: 21300000, guid: 7d870ea0ee2012a4da2c6e7d83df558d, type: 3}
+  - key: Assembly
+    sprite: {fileID: 21300000, guid: 0fbc0dea0e932a04f97042b6379b5651, type: 3}
+  - key: Build
+    sprite: {fileID: 21300000, guid: e506ad2349f02964fa18efd616ca3b3b, type: 3}
+  - key: Cable
+    sprite: {fileID: 21300000, guid: 77463d4f29efff74cbfb0ae97560bbc7, type: 3}
+  - key: Capacitor
+    sprite: {fileID: 21300000, guid: dcef2cbbe203581408233742cfc4ae0f, type: 3}
+  - key: Check
+    sprite: {fileID: 21300000, guid: 31a80a326a5677647ab52c9e83b8e0e9, type: 3}
+  - key: Clock
+    sprite: {fileID: 21300000, guid: dc26c0feb74f3334c8ff12e6953f3387, type: 3}
+  - key: Close
+    sprite: {fileID: 21300000, guid: a99620b0ad5ad6e45b06810870bf1edb, type: 3}
+  - key: Core
+    sprite: {fileID: 21300000, guid: 42afda4225f53ea4697e9cbae1a4a6f1, type: 3}
+  - key: Credit
+    sprite: {fileID: 21300000, guid: f1fff8dbf108fae448afdbc355f46387, type: 3}
+  - key: Factory
+    sprite: {fileID: 21300000, guid: 86d70e16e48360a438aa9bf2cf147254, type: 3}
+  - key: Grid
+    sprite: {fileID: 21300000, guid: 7a376b81cd41c0147a4f401c54077c89, type: 3}
+  - key: Lock
+    sprite: {fileID: 21300000, guid: c490590b5f87cdf4da455f3e79bd5995, type: 3}
+  - key: Minus
+    sprite: {fileID: 21300000, guid: 80e147655be8c1f48b5451cc0df976d0, type: 3}
+  - key: Panel
+    sprite: {fileID: 21300000, guid: 2d22c234edb50bb4891df1a1fd691a36, type: 3}
+  - key: PanelComplete
+    sprite: {fileID: 21300000, guid: 6776fe7cc2cadb04fa9acc8b0c9aef86, type: 3}
+  - key: PanelDisabled
+    sprite: {fileID: 21300000, guid: 3879fc2aa4caa6a459873a1d9ec4ef30, type: 3}
+  - key: PanelSelected
+    sprite: {fileID: 21300000, guid: 3bb33eb93f79dc544bb71b9cccb60853, type: 3}
+  - key: People
+    sprite: {fileID: 21300000, guid: e8276d28299342442a1faae52e49fbf2, type: 3}
+  - key: Plus
+    sprite: {fileID: 21300000, guid: 250f557082a6eab41896cb4764969e1e, type: 3}
+  - key: Profit
+    sprite: {fileID: 21300000, guid: 8449668bcf7880447b7fffbc43d22060, type: 3}
+  - key: Pulse
+    sprite: {fileID: 21300000, guid: e223a8fc216e2b34ea50d4e0310513af, type: 3}
+  - key: Recycle
+    sprite: {fileID: 21300000, guid: ac832264e1bdfd645b03ac74e88d49c4, type: 3}
+  - key: Research
+    sprite: {fileID: 21300000, guid: 26e5f73fbc5c5474e8d6a22c173d51ef, type: 3}
+  - key: Segment
+    sprite: {fileID: 21300000, guid: 441a167d2fe190d40800011752fcab14, type: 3}
+  - key: Star
+    sprite: {fileID: 21300000, guid: 92f07921bd9d816469348e76e32b9716, type: 3}
+  - key: Target
+    sprite: {fileID: 21300000, guid: be79377154cea9e4595b299505a5def7, type: 3}
+  - key: Trash
+    sprite: {fileID: 21300000, guid: b17a9aa0f7829584aa93b20f7b02eb9a, type: 3}
+  buildingIcons:
+  - definition: {fileID: 11400000, guid: 034399959a8444641b480e46ef3aef2e, type: 2}
+    originalIcon: {fileID: 0}
+    themedIcon: {fileID: 21300000, guid: ee8ab341432ba2543909770c13da8b17, type: 3}
+  - definition: {fileID: 11400000, guid: cf8c842f1f0d85841be0d1afa135f079, type: 2}
+    originalIcon: {fileID: -8527054742470895871, guid: ce63f895dc3e69b438b703aa8521028b, type: 3}
+    themedIcon: {fileID: 21300000, guid: 0fbc0dea0e932a04f97042b6379b5651, type: 3}
+  - definition: {fileID: 11400000, guid: b6bc6ca8bc7d07b4893f1d3a178dd569, type: 2}
+    originalIcon: {fileID: 0}
+    themedIcon: {fileID: 21300000, guid: dcef2cbbe203581408233742cfc4ae0f, type: 3}
+  - definition: {fileID: 11400000, guid: 81e79c25cb6841246a2a7bb25c3b4ca8, type: 2}
+    originalIcon: {fileID: 0}
+    themedIcon: {fileID: 21300000, guid: 42afda4225f53ea4697e9cbae1a4a6f1, type: 3}
+  - definition: {fileID: 11400000, guid: 94613f0f97ef75644a8951579a9a69d2, type: 2}
+    originalIcon: {fileID: 9097041740602212254, guid: 2e05a1337d07b30438a2fa66a0cd83ae, type: 3}
+    themedIcon: {fileID: 21300000, guid: 86d70e16e48360a438aa9bf2cf147254, type: 3}
+  - definition: {fileID: 11400000, guid: ca14f38294479a146833bf442c8f7748, type: 2}
+    originalIcon: {fileID: 9097041740602212254, guid: 2e05a1337d07b30438a2fa66a0cd83ae, type: 3}
+    themedIcon: {fileID: 21300000, guid: 26e5f73fbc5c5474e8d6a22c173d51ef, type: 3}
+  text: {r: 0.94, g: 0.96, b: 0.96, a: 1}
+  mint: {r: 0.51, g: 0.95, b: 0.73, a: 1}
+  cyan: {r: 0.34, g: 0.9, b: 0.93, a: 1}
+  gold: {r: 1, g: 0.81, b: 0.39, a: 1}
+  muted: {r: 0.55, g: 0.62, b: 0.65, a: 1}
+  danger: {r: 1, g: 0.45, b: 0.45, a: 1}

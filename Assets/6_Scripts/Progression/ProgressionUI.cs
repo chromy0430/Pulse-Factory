@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using PulseFactory.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,7 +14,33 @@ namespace PulseFactory.Progression
         private RectTransform canvasRoot, overlay, content;
         private UnityEngine.UI.ScrollRect scroll;
         private TextMeshProUGUI balance, detail;
-        private UnityEngine.UI.Button purchase;
+        private UnityEngine.UI.Button purchase, researchTab, traitTab;
+        private TextMeshProUGUI mapTitle, zoomLabel;
+        public ProgressionKind CurrentKind => kind;
+        public float Zoom => map?.Zoom ?? 1;
+        public Vector2 MapCenter => map?.Center ?? Vector2.zero;
+        public Vector2 MapViewportSize => scroll != null ? scroll.viewport.rect.size : Vector2.zero;
+        public void CenterMap(Vector2 position) => map?.CenterOn(position);
+        public void CenterEntry()
+        {
+            var entry=state?.catalog!=null?state.catalog.Entry(kind):null;
+            CenterMap((entry!=null?entry.position:Vector2.zero)+ProgressionMapViewport.NodeSize*.5f);
+        }
+        private void FitEntry()
+        {
+            if (state.catalog == null) return;
+            Canvas.ForceUpdateCanvases();
+            var entry = state.catalog.Entry(kind);
+            Vector2 center = (entry != null ? entry.position : Vector2.zero) + ProgressionMapViewport.NodeSize * .5f;
+            Vector2 extent = ProgressionMapViewport.NodeSize;
+            foreach (var node in state.catalog.nodes)
+            {
+                if (node == null || node.kind != kind) continue;
+                var a = node.position - center; var b = node.position + ProgressionMapViewport.NodeSize - center;
+                extent = Vector2.Max(extent, new Vector2(Mathf.Max(Mathf.Abs(a.x), Mathf.Abs(b.x)), Mathf.Max(Mathf.Abs(a.y), Mathf.Abs(b.y))));
+            }
+            map.Zoom = Mathf.Clamp(Mathf.Min(scroll.viewport.rect.width / (2 * extent.x), scroll.viewport.rect.height / (2 * extent.y)) * .9f, .7f, 1f);
+        }
         private ProgressionKind kind;
         private ProgressionNodeSO selected;
         private readonly Dictionary<ProgressionNodeSO, ProgressionNodeView> cards = new();
@@ -60,43 +87,63 @@ namespace PulseFactory.Progression
             scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1280, 720); scaler.matchWidthOrHeight = .5f;
             canvasRoot.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-            ProgressionUIFactory.Button("Research", canvasRoot, "연구 [R]", new Vector2(20, 70), new Vector2(120, 40), () => Open(ProgressionKind.Research));
-            ProgressionUIFactory.Button("Traits", canvasRoot, "특성 [T]", new Vector2(150, 70), new Vector2(120, 40), () => Open(ProgressionKind.Trait));
-            overlay = ProgressionUIFactory.Rect("TreeOverlay", canvasRoot, Vector2.zero, Vector2.zero);
-            ProgressionUIFactory.Stretch(overlay, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-            ProgressionUIFactory.Image(overlay, new Color(.035f, .045f, .07f, 1));
-            ProgressionUIFactory.Button("ResearchTab", overlay, "연구", new Vector2(20, 20), new Vector2(110, 40), () => Open(ProgressionKind.Research));
-            ProgressionUIFactory.Button("TraitTab", overlay, "특성", new Vector2(140, 20), new Vector2(110, 40), () => Open(ProgressionKind.Trait));
-            ProgressionUIFactory.Button("ZoomOut", overlay, "−", new Vector2(270, 20), new Vector2(40, 40), () => SetZoom(map.Zoom / 1.2f));
-            ProgressionUIFactory.Button("ZoomIn", overlay, "+", new Vector2(320, 20), new Vector2(40, 40), () => SetZoom(map.Zoom * 1.2f));
-            ProgressionUIFactory.Button("Close", overlay, "닫기 [ESC]", new Vector2(380, 20), new Vector2(140, 40), Close);
-            balance = ProgressionUIFactory.Text("Balance", overlay, "", new Vector2(550, 20), new Vector2(700, 40));
-            var viewport = ProgressionUIFactory.Rect("Viewport", overlay, Vector2.zero, Vector2.zero);
-            ProgressionUIFactory.Stretch(viewport, Vector2.zero, Vector2.one, new Vector2(20, 120), new Vector2(-20, -120));
-            ProgressionUIFactory.Image(viewport, new Color(.07f, .09f, .12f));
+            ProgressionUIFactory.Button("Research", canvasRoot, "연구 [R]", new Vector2(20, 100), new Vector2(120, 40), () => Open(ProgressionKind.Research));
+            ProgressionUIFactory.Button("Traits", canvasRoot, "특성 [T]", new Vector2(150, 100), new Vector2(120, 40), () => Open(ProgressionKind.Trait));
+            overlay = PFUI.Rect("TreeOverlay", canvasRoot, Vector2.zero, Vector2.zero);
+            PFUI.Stretch(overlay, Vector2.zero, Vector2.one, new Vector2(10,78), new Vector2(-10,-108)); PFUI.Box(overlay);
+            var titleIcon=PFUI.Icon("MapIcon",overlay,"Research",new Vector2(20,12),30);
+            mapTitle=PFUI.Text("MapTitle",overlay,"연구 지도",new Vector2(64,8),new Vector2(260,40),27);
+            var tabs=PFUI.Rect("Tabs",overlay,Vector2.zero,new Vector2(248,36));
+            tabs.anchorMin=tabs.anchorMax=tabs.pivot=new Vector2(1,1);tabs.anchoredPosition=new Vector2(-76,-10);
+            researchTab=PFUI.Button("ResearchTab",tabs,"연구",Vector2.zero,new Vector2(118,36),()=>Open(ProgressionKind.Research));
+            traitTab=PFUI.Button("TraitTab",tabs,"특성",new Vector2(126,0),new Vector2(118,36),()=>Open(ProgressionKind.Trait));
+            var close=PFUI.Button("Close",overlay,"",Vector2.zero,new Vector2(42,36),Close);
+            var cr=(RectTransform)close.transform;cr.anchorMin=cr.anchorMax=cr.pivot=new Vector2(1,1);cr.anchoredPosition=new Vector2(-18,-10);
+            PFUI.Icon("CloseIcon",cr,"Close",new Vector2(9,6),24);
+            var viewport=PFUI.Rect("Viewport",overlay,Vector2.zero,Vector2.zero);
+            PFUI.Stretch(viewport,Vector2.zero,Vector2.one,new Vector2(8,96),new Vector2(-8,-58));
+            var grid=PFUI.Box(viewport,"Grid");grid.type=UnityEngine.UI.Image.Type.Tiled;
             viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
-            scroll = viewport.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
-            scroll.viewport = viewport; scroll.horizontal = scroll.vertical = true;
-            scroll.movementType = UnityEngine.UI.ScrollRect.MovementType.Clamped; scroll.scrollSensitivity = 30;
-            content = ProgressionUIFactory.Rect("Content", viewport, Vector2.zero, new Vector2(2000, 1200));
-            scroll.content = content;
-            map = new ProgressionMapViewport(scroll);
-            var tooltipRect = ProgressionUIFactory.Rect("NodeTooltip", viewport, Vector2.zero, Vector2.one);
-            tooltip = tooltipRect.gameObject.AddComponent<ProgressionTooltip>(); tooltip.Initialize(viewport);
-            scroll.onValueChanged.AddListener(_ => tooltip.Hide());
-            detail = ProgressionUIFactory.Text("Detail", overlay, "노드를 선택하세요. 빈 곳 드래그로 지도를 이동할 수 있습니다.", Vector2.zero, Vector2.zero);
-            ProgressionUIFactory.Stretch(detail.rectTransform, Vector2.zero, new Vector2(1, 0), new Vector2(20, 12), new Vector2(-220, 105));
-            detail.fontSize = 16;
-            purchase = ProgressionUIFactory.Button("Purchase", overlay, "구매 / 강화", Vector2.zero, new Vector2(180, 50), Purchase);
-            var pr = (RectTransform)purchase.transform; pr.anchorMin = pr.anchorMax = pr.pivot = new Vector2(1, 0); pr.anchoredPosition = new Vector2(-20, 35);
+            scroll=viewport.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
+            scroll.viewport=viewport;scroll.horizontal=scroll.vertical=true;
+            scroll.movementType=UnityEngine.UI.ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=0;
+            viewport.gameObject.AddComponent<PFMapZoom>().owner=this;
+            content=PFUI.Rect("Content",viewport,Vector2.zero,new Vector2(2000,1200));scroll.content=content;
+            map=new ProgressionMapViewport(scroll);
+            var overview=PFUI.Rect("Overview",viewport,Vector2.zero,new Vector2(150,76));
+            overview.anchorMin=overview.anchorMax=overview.pivot=new Vector2(1,0);overview.anchoredPosition=new Vector2(-10,10);
+            overview.gameObject.AddComponent<PFMapOverview>().owner=this;
+            var tooltipRect=PFUI.Rect("NodeTooltip",viewport,Vector2.zero,Vector2.one);
+            tooltip=tooltipRect.gameObject.AddComponent<ProgressionTooltip>();tooltip.Initialize(viewport);
+            scroll.onValueChanged.AddListener(_=>tooltip.Hide());
+            detail=PFUI.Text("Detail",overlay,"노드를 선택하세요.",Vector2.zero,Vector2.zero,15);
+            PFUI.Stretch(detail.rectTransform,Vector2.zero,new Vector2(1,0),new Vector2(20,20),new Vector2(-410,88));
+            detail.textWrappingMode=TextWrappingModes.Normal;
+            detail.maxVisibleLines=3;detail.overflowMode=TextOverflowModes.Ellipsis;
+            var controls=PFUI.Rect("MapControls",overlay,Vector2.zero,new Vector2(172,70));
+            controls.anchorMin=controls.anchorMax=controls.pivot=new Vector2(1,0);controls.anchoredPosition=new Vector2(-210,16);
+            PFUI.Button("ZoomOut",controls,"−",Vector2.zero,new Vector2(36,30),()=>SetZoom(map.Zoom/1.2f));
+            zoomLabel=PFUI.Text("Zoom",controls,"100%",new Vector2(42,0),new Vector2(66,30),17);zoomLabel.alignment=TextAlignmentOptions.Center;
+            PFUI.Button("ZoomIn",controls,"+",new Vector2(114,0),new Vector2(36,30),()=>SetZoom(map.Zoom*1.2f));
+            PFUI.Button("Recenter",controls,"시작점",new Vector2(0,36),new Vector2(150,30),CenterEntry,"Target");
+            purchase=PFUI.Button("Purchase",overlay,"연구 / 강화",Vector2.zero,new Vector2(174,48),Purchase);
+            var pr=(RectTransform)purchase.transform;pr.anchorMin=pr.anchorMax=pr.pivot=new Vector2(1,0);pr.anchoredPosition=new Vector2(-20,22);
+            balance=PFUI.Text("Balance",overlay,"",Vector2.zero,Vector2.zero,12);
+            balance.gameObject.SetActive(false);
             overlay.gameObject.SetActive(false);
         }
+
         public void Open(ProgressionKind value)
         {
             if (overlay == null) return;
             var build = FindFirstObjectByType<BuildController>();
             if (build != null) build.CancelMode();
-            kind = value; selected = null; IsOpen = true; overlay.gameObject.SetActive(true); Rebuild();
+            FindFirstObjectByType<BuildPanelView>()?.SetOpen(false);
+            kind = value; mapTitle.text=kind==ProgressionKind.Research?"연구 지도":"특성 강화";
+            PFUI.State(researchTab.GetComponent<UnityEngine.UI.Image>(),kind==ProgressionKind.Research);
+            PFUI.State(traitTab.GetComponent<UnityEngine.UI.Image>(),kind==ProgressionKind.Trait);
+            overlay.Find("MapIcon").GetComponent<UnityEngine.UI.Image>().sprite=PFUI.Theme?.Get(kind==ProgressionKind.Research?"Research":"Star");
+            selected = null; IsOpen = true; overlay.gameObject.SetActive(true); FitEntry(); Rebuild();
             var entry = state.catalog != null ? state.catalog.Entry(kind) : null;
             map.CenterOn((entry != null ? entry.position : Vector2.zero) + ProgressionMapViewport.NodeSize * .5f);
         }
@@ -124,13 +171,13 @@ namespace PulseFactory.Progression
             Vector2 origin = map.Origin;
             var edgeRect = ProgressionUIFactory.Rect("Connections", content, Vector2.zero, content.sizeDelta);
             var edges = edgeRect.gameObject.AddComponent<ProgressionEdges>();
-            edges.catalog = state.catalog; edges.kind = kind; edges.origin = origin; edges.raycastTarget = false;
+            edges.catalog = state.catalog; edges.kind = kind; edges.origin = origin; edges.state=state; edges.raycastTarget = false;
             edges.color = new Color(.3f, .65f, .75f);
             if (state.catalog != null) foreach (var node in state.catalog.nodes)
             {
                 if (node == null || node.kind != kind) continue;
                 var button = ProgressionUIFactory.Button("Node-" + node.id, content, node.title,
-                    node.position - origin, new Vector2(160, 88), () => { selected = node; RefreshState(); });
+                    node.position - origin, ProgressionMapViewport.NodeSize, () => { selected = node; RefreshState(); });
                 var view = button.gameObject.AddComponent<ProgressionNodeView>();
                 view.Initialize(node, state, tooltip, scroll); cards[node] = view;
             }
@@ -141,17 +188,18 @@ namespace PulseFactory.Progression
         public void RefreshState()
         {
             dirty = false;
+            zoomLabel.text=$"{Zoom*100:0}%";
+            var edges=content.GetComponentInChildren<ProgressionEdges>();if(edges!=null)edges.SetVerticesDirty();
             balance.text = $"크레딧 {CreditWallet.Instance?.CurrentCredit ?? 0:N0}   연구 포인트 {state.ResearchPoints:N0}";
             foreach (var pair in cards)
             {
                 var node = pair.Key;
                 bool available = state.CanPurchase(node, out _);
-                pair.Value.Refresh();
-                pair.Value.GetComponent<UnityEngine.UI.Image>().color = node == selected ? new Color(.55f, .42f, .12f) : state.Level(node) >= node.MaxLevel ? new Color(.13f, .45f, .32f) : available ? new Color(.13f, .32f, .47f) : new Color(.18f, .19f, .23f);
+                pair.Value.SetSelected(node == selected);
             }
             if (tooltip.Visible) tooltip.Refresh();
             purchase.interactable = selected != null && state.CanPurchase(selected, out _);
-            if (selected == null) { detail.text = "드래그: 지도 이동 / + −: 확대·축소\n노드에 마우스: 상세 설명 / 긴 설명 위 휠: 설명 스크롤\n자물쇠: 선행 조건 미완료"; return; }
+            if (selected == null) { detail.text = "완료 · 연구 가능 · 잠김\n드래그 이동 / 휠 확대·축소 / 노드 호버 상세 설명"; return; }
             state.CanPurchase(selected, out string reason);
             detail.text = $"{selected.title}  {state.Level(selected)}/{selected.MaxLevel}\n{selected.description}\n비용: {selected.Cost(state.Level(selected)):N0} 크레딧 / {selected.Cost(state.Level(selected), true):N0} 연구 포인트\n{reason ?? "구매 가능합니다."}";
         }

@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(-100)]
@@ -66,10 +67,7 @@ public sealed class BuildController : MonoBehaviour
         }
         if (keyboard != null && keyboard.xKey.wasPressedThisFrame)
         {
-            bool enter = !demolitionMode;
-            CancelMode();
-            panel.SetOpen(false);
-            demolitionMode = enter;
+            ToggleDemolition();
             return;
         }
         if ((keyboard != null && keyboard.escapeKey.wasPressedThisFrame) ||
@@ -93,7 +91,8 @@ public sealed class BuildController : MonoBehaviour
         PreviewPosition = position;
         CanPlace = grid.CanPlace(position, SelectedDefinition.PlacementSize, out string reason);
         var progressionPolicy = GetComponent<PulseFactory.Progression.ProgressionBuildPolicy>();
-        if (CanPlace && progressionPolicy != null) CanPlace = progressionPolicy.CanBuild(out reason);
+        bool capacityDenied = CanPlace && progressionPolicy != null && !progressionPolicy.CanBuild(out reason);
+        if (capacityDenied) CanPlace = false;
         if (CanPlace && !ConstructionReceipt.CanPay(SelectedDefinition.BuildCost, out var paymentReason))
         {
             CanPlace = false;
@@ -102,8 +101,16 @@ public sealed class BuildController : MonoBehaviour
         PlacementStatus = reason;
         ghost.Refresh(grid, position, CanPlace);
         panel.SetStatus(SelectedDefinition.name + " | " + reason);
-        if (Time.frameCount > selectionFrame && Mouse.current.leftButton.wasPressedThisFrame && CanPlace)
-            PlaceAt(position);
+        if (Time.frameCount > selectionFrame && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            if (capacityDenied) GameSounds.Play(GameSounds.Capacity);
+            else if (CanPlace) PlaceAt(position);
+        }
+    }
+
+    public void ToggleDemolition()
+    {
+        bool enter = !demolitionMode; CancelMode(); panel.SetOpen(false); demolitionMode = enter;
     }
 
     public void ToggleMenu()
@@ -153,7 +160,11 @@ public sealed class BuildController : MonoBehaviour
         if (SelectedDefinition == null || panel.IsOpen) return null;
         if (!BuildMenuRules.CanPlace(SelectedDefinition, out _)) return null;
         var progressionPolicy = GetComponent<PulseFactory.Progression.ProgressionBuildPolicy>();
-        if (progressionPolicy != null && !progressionPolicy.CanBuild(out _)) return null;
+        if (progressionPolicy != null && !progressionPolicy.CanBuild(out _))
+        {
+            GameSounds.Play(GameSounds.Capacity);
+            return null;
+        }
         position = grid.Snap(position);
         Physics.SyncTransforms();
         if (!grid.CanPlace(position, SelectedDefinition.PlacementSize, out _)) return null;
@@ -175,6 +186,7 @@ public sealed class BuildController : MonoBehaviour
             Destroy(instance);
             return null;
         }
+        GameSounds.Play(GameSounds.Place);
         return runtime;
     }
 

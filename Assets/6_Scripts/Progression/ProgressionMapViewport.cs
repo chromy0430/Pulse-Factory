@@ -5,7 +5,7 @@ namespace PulseFactory.Progression
 {
     public sealed class ProgressionMapViewport
     {
-        public static readonly Vector2 NodeSize = new(160, 88);
+        public static readonly Vector2 NodeSize = new(160, 156);
         private readonly ScrollRect scroll;
         public Vector2 Origin { get; private set; }
         public float Zoom { get; set; } = 1;

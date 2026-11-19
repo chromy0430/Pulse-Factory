@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 
 public class BuildingRuntime : PowerNode
 {
@@ -40,11 +41,24 @@ public class BuildingRuntime : PowerNode
     // Pulse
     // ============================================================
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        GameSounds.Register(this);
+    }
+
+    protected override void OnDisable()
+    {
+        GameSounds.Unregister(this);
+        base.OnDisable();
+    }
+
     protected override PulseData ProcessPulse(
         PulseData pulse)
     {
         // 1. 공장에 전력 도착
         // 2. 시각적인 POP 반응
+        GameSounds.Pop(this, pulse.ArrivalPop);
         pulseVisual?.PlayPulse(pulse.Power);
 
         // 3. 공장의 실제 기능 실행

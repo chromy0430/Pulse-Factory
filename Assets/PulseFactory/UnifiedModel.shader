@@ -24,5 +24,102 @@ Shader "PulseFactory/UnifiedModel" {
  return UniversalFragmentPBR(d,s);
  }
  ENDHLSL }
+ // Screen-space effects need the same geometry as the visible model.
+ // Keep these passes when updating the imported model shader.
+ Pass
+ {
+     Name "DepthOnly"
+     Tags { "LightMode"="DepthOnly" }
+     ZWrite [_ZWrite] ZTest LEqual Cull Back ColorMask 0
+     HLSLPROGRAM
+     #pragma target 3.5
+     #pragma vertex DepthVertex
+     #pragma fragment DepthFragment
+     #pragma multi_compile_instancing
+     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+     struct DepthAttributes
+     {
+         float4 positionOS : POSITION;
+         UNITY_VERTEX_INPUT_INSTANCE_ID
+     };
+     struct DepthVaryings
+     {
+         float4 positionCS : SV_POSITION;
+         UNITY_VERTEX_OUTPUT_STEREO
+     };
+     DepthVaryings DepthVertex(DepthAttributes input)
+     {
+         DepthVaryings output = (DepthVaryings)0;
+         UNITY_SETUP_INSTANCE_ID(input);
+         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+         output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+         return output;
+     }
+     half4 DepthFragment(DepthVaryings input) : SV_Target
+     {
+         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+         return 0;
+     }
+     ENDHLSL
+ }
+ Pass
+ {
+     Name "DepthNormals"
+     Tags { "LightMode"="DepthNormals" }
+     ZWrite [_ZWrite] ZTest LEqual Cull Back
+     HLSLPROGRAM
+     #pragma target 3.5
+     #pragma vertex ModelNormalsVertex
+     #pragma fragment ModelNormalsFragment
+     #pragma multi_compile_instancing
+     #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+     #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
+     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RealtimeLights.hlsl"
+     struct ModelNormalsAttributes
+     {
+         float4 positionOS : POSITION;
+         float3 normalOS : NORMAL;
+         UNITY_VERTEX_INPUT_INSTANCE_ID
+     };
+     struct ModelNormalsVaryings
+     {
+         float4 positionCS : SV_POSITION;
+         float3 normalWS : TEXCOORD0;
+         UNITY_VERTEX_INPUT_INSTANCE_ID
+         UNITY_VERTEX_OUTPUT_STEREO
+     };
+     ModelNormalsVaryings ModelNormalsVertex(ModelNormalsAttributes input)
+     {
+         ModelNormalsVaryings output = (ModelNormalsVaryings)0;
+         UNITY_SETUP_INSTANCE_ID(input);
+         UNITY_TRANSFER_INSTANCE_ID(input, output);
+         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+         output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+         output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+         return output;
+     }
+     void ModelNormalsFragment(ModelNormalsVaryings input, out half4 outNormalWS : SV_Target0
+     #ifdef _WRITE_RENDERING_LAYERS
+         , out uint outRenderingLayers : SV_Target1
+     #endif
+     )
+     {
+         UNITY_SETUP_INSTANCE_ID(input);
+         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+         float3 normalWS = NormalizeNormalPerPixel(input.normalWS);
+     #if defined(_GBUFFER_NORMALS_OCT)
+         float2 octNormalWS = PackNormalOctQuadEncode(normalWS);
+         outNormalWS = half4(PackFloat2To888(saturate(octNormalWS * 0.5 + 0.5)), 0);
+     #else
+         outNormalWS = half4(normalWS, 0);
+     #endif
+     #ifdef _WRITE_RENDERING_LAYERS
+         outRenderingLayers = EncodeMeshRenderingLayer();
+     #endif
+     }
+     ENDHLSL
+ }
+
  }
 }

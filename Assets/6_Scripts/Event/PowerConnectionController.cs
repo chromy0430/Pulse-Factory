@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 using UnityEngine.InputSystem;
 
 public class PowerConnectionController : MonoBehaviour
@@ -135,7 +136,11 @@ public class PowerConnectionController : MonoBehaviour
         }
         if (connected)
             Debug.Log($"[Cable] {selectedSourceNode.name} ({selectedSourcePort.Position}) -> {node.name} ({port.Position})");
-        if (connected) CancelCurrentConnection();
+        if (connected)
+        {
+            GameSounds.Play(GameSounds.Connect);
+            CancelCurrentConnection();
+        }
         else
             StatusChanged?.Invoke($"Connection rejected. Max cable: {cableDefinition.MaxLength:0.0}m. Check ports and direction.");
         return connected;

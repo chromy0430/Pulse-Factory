@@ -995,13 +995,13 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.005
   minimumSmoothness:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.65
   edgeFade:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.08
   radianceClamp:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 32
   debugConfidence:
     m_OverrideState: 1

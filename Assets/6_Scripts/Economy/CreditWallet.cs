@@ -1,6 +1,7 @@
 using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 
 public class CreditWallet : MonoBehaviour
 {
@@ -88,6 +89,7 @@ public class CreditWallet : MonoBehaviour
             return;
 
         CurrentCredit += amount;
+        GameSounds.Play(GameSounds.Credit);
 
         NotifyChanged();
     }

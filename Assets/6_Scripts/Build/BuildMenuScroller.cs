@@ -1,6 +1,7 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 using UnityEngine.EventSystems;
 
 public sealed class BuildMenuScroller : MonoBehaviour, IBeginDragHandler
@@ -26,6 +27,8 @@ public sealed class BuildMenuScroller : MonoBehaviour, IBeginDragHandler
 
     private void OnEnable()
     {
+        GameSounds.Bind(previous);
+        GameSounds.Bind(next);
         previous.onClick.AddListener(Previous);
         next.onClick.AddListener(Next);
         scroll.onValueChanged.AddListener(Scrolled);
@@ -37,6 +40,11 @@ public sealed class BuildMenuScroller : MonoBehaviour, IBeginDragHandler
         next.onClick.RemoveListener(Next);
         scroll.onValueChanged.RemoveListener(Scrolled);
         Stop();
+    }
+
+    public void ApplyPresentation(float width, float gap)
+    {
+        itemWidth = width; spacing = gap; Resize();
     }
 
     public void Configure(int count)

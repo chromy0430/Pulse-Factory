@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using PulseFactory.Audio;
 
 namespace PulseFactory.Progression
 {
@@ -72,6 +73,7 @@ namespace PulseFactory.Progression
                 if (!wallet.TrySpend(node.Cost(level))) { reason = "크레딧이 부족합니다."; return false; }
                 ResearchPoints -= node.Cost(level, true);
                 levels[node.id] = level + 1;
+                GameSounds.Play(node.kind == ProgressionKind.Research ? GameSounds.Research : GameSounds.Trait);
                 Changed?.Invoke();
             }
             finally { purchasing = false; }

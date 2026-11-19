@@ -18,6 +18,9 @@ public sealed class BuildPanelView : MonoBehaviour
     [ShowInInspector, ReadOnly] public bool IsOpen { get; private set; }
     public event System.Action<int> Selected;
     private Tween slide;
+    public float OpenOffset { get; set; } = 20f;
+    public RectTransform PanelRect => panel;
+    public string Status => statusLabel != null ? statusLabel.text : "";
     private float HiddenY => -panel.rect.height - 24f;
 
     private void Awake()
@@ -81,7 +84,7 @@ public sealed class BuildPanelView : MonoBehaviour
         panelGroup.blocksRaycasts = true;
         if (!open && UnityEngine.EventSystems.EventSystem.current != null)
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
-        slide = panel.DOAnchorPosY(open ? 20f : HiddenY, slideDuration)
+        slide = panel.DOAnchorPosY(open ? OpenOffset : HiddenY, slideDuration)
             .SetEase(open ? Ease.OutCubic : Ease.InCubic).SetUpdate(true)
             .OnComplete(() => panelGroup.blocksRaycasts = open);
     }

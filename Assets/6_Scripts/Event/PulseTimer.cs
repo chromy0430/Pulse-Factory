@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 
 public class PulseTimer : MonoBehaviour
 {
@@ -70,9 +71,18 @@ public class PulseTimer : MonoBehaviour
             settings.BaseInterval;
     }
 
+    private bool chargeCuePlayed;
+
     private void Update()
     {
         ElapsedTime += Time.deltaTime;
+
+        // The charge sound is the final 0.88 seconds of the board's charge cycle.
+        if (!chargeCuePlayed && RemainingTime <= 0.88f)
+        {
+            GameSounds.Play(GameSounds.Charge);
+            chargeCuePlayed = true;
+        }
 
         if (ElapsedTime < CurrentInterval)
             return;
@@ -84,6 +94,7 @@ public class PulseTimer : MonoBehaviour
 
     private void ExecutePulse()
     {
+        chargeCuePlayed = false;
         PulseCount++;
 
         PulseData pulse =
@@ -120,6 +131,7 @@ public class PulseTimer : MonoBehaviour
     [Button("Reset Timer")]
     private void ResetTimer()
     {
+        chargeCuePlayed = false;
         ElapsedTime = 0f;
     }
 }

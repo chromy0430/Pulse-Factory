@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 
 public class Core : PowerNode
 {
@@ -56,6 +57,7 @@ public class Core : PowerNode
     protected override PulseData ProcessPulse(
         PulseData pulse)
     {
+        GameSounds.Play(GameSounds.Release);
         pulseVisual?.PlayPulse(pulse.Power);
         
         Debug.Log(

@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using PulseFactory.Audio;
 
 [RequireComponent(typeof(LineRenderer))]
 public class PowerCable : MonoBehaviour
 {
     [Title("Power Cable")]
 
-    // ============================================================
-    // References
-    // ============================================================
 
     [BoxGroup("References")]
     [Required]
@@ -26,9 +24,6 @@ public class PowerCable : MonoBehaviour
     [Tooltip("선택 사항. 중앙을 원점으로 길이와 지름을 1로 맞춘 모델입니다. +Z가 도착 포트를 향합니다.")]
     private Transform modelSpan;
 
-    // ============================================================
-    // Runtime
-    // ============================================================
 
     [BoxGroup("Runtime")]
     [ShowInInspector]
@@ -101,18 +96,22 @@ public class PowerCable : MonoBehaviour
     private int QueuedPulseCount =>
         pulseQueue.Count;
 
-    // ============================================================
-    // Runtime Data
-    // ============================================================
+    // Zero follows the receiving factory's automatic POP assignment.
+    private int popNumber;
+    public int PopNumber
+    {
+        get => popNumber;
+        set => popNumber = Mathf.Clamp(value, 0, 5);
+    }
+
+    private void OnEnable() => PowerCablePicker.Register(this);
+    private void OnDisable() => PowerCablePicker.Unregister(this);
 
     private readonly Queue<PulseData> pulseQueue =
         new();
 
     private Coroutine pulseRoutine;
 
-    // ============================================================
-    // Unity
-    // ============================================================
 
     private void Reset()
     {
@@ -152,9 +151,6 @@ public class PowerCable : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // Initialize
-    // ============================================================
 
     public void Initialize(
         PowerCableDefinitionSO definition,
@@ -185,9 +181,6 @@ public class PowerCable : MonoBehaviour
             lineRenderer.sharedMaterial = Definition.CableMaterial;
     }
 
-    // ============================================================
-    // Cable Visual
-    // ============================================================
 
     public void RefreshVisual()
     {
@@ -218,9 +211,6 @@ public class PowerCable : MonoBehaviour
         modelSpan.localScale = new Vector3(width / xScale, width / yScale, delta.magnitude);
     }
 
-    // ============================================================
-    // Pulse
-    // ============================================================
 
     public void Transmit(
         PulseData pulse)
@@ -264,9 +254,10 @@ public class PowerCable : MonoBehaviour
             yield break;
         }
 
+        GameSounds.Play(GameSounds.Travel);
         if (pulseVisual == null)
         {
-            TargetNode.ReceivePulse(pulse);
+            TargetNode.ReceivePulse(pulse.WithArrivalPop(PopNumber));
             yield break;
         }
 
@@ -295,6 +286,6 @@ public class PowerCable : MonoBehaviour
 
         pulseVisual.gameObject.SetActive(false);
 
-        TargetNode.ReceivePulse(pulse);
+        TargetNode.ReceivePulse(pulse.WithArrivalPop(PopNumber));
     }
 }

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4eb1d68213f3ea4cac459ebf0191518, type: 3}
+  m_Name: PFAudioSettings
+  m_EditorClassIdentifier: Assembly-CSharp::PulseFactory.Audio.PFAudioSettings
+  masterVolume: 1
+  musicVolume: 0.65
+  effectsVolume: 0.8
+  playlist:
+  - {fileID: 8300000, guid: faaa5b971cdb00a458901e7870e0f632, type: 3}
+  - {fileID: 8300000, guid: 0b1a427b4dbfdd54ab0c240d7b2c655f, type: 3}
+  effects:
+  - {fileID: 8300000, guid: 9d3b949514423d44f91786327ddef2dd, type: 3}
+  - {fileID: 8300000, guid: 1c65f8a4ee7f5804e8d8bf2a241836f3, type: 3}
+  - {fileID: 8300000, guid: c08574ade4e3f8a4a9fdba01cd4bbd6d, type: 3}
+  - {fileID: 8300000, guid: ac2215a30479bf04b8a1d6f40f9bef4f, type: 3}
+  - {fileID: 8300000, guid: 913b674159fce1b459cb8616aff31c17, type: 3}
+  - {fileID: 8300000, guid: d6f1d8ef94e329245b4d93dda2f70f57, type: 3}
+  - {fileID: 8300000, guid: 421f3351ac87fdb4a8892a101c7ed7c4, type: 3}
+  - {fileID: 8300000, guid: 0e3ba9157b497944692ce3c0b6da1629, type: 3}
+  - {fileID: 8300000, guid: 4e03a3df40a398e44a23fd659167074b, type: 3}
+  - {fileID: 8300000, guid: ae30d25aeebd78745ab4a8194ab77ea2, type: 3}
+  - {fileID: 8300000, guid: fd7d797a14d0f8f4d88deb5a31469d1a, type: 3}
+  - {fileID: 8300000, guid: b3deb0a8756f12b48b1e02c95eeb8dff, type: 3}
+  - {fileID: 8300000, guid: 74f4a493c863dc74185131b76b23c594, type: 3}
+  - {fileID: 8300000, guid: 4ba217f326a66ec47ab2d8f11d24268e, type: 3}
+  - {fileID: 8300000, guid: c60eea76957a3e64abc5c1837efde0d7, type: 3}
+  - {fileID: 8300000, guid: 3643a289afbbdcd4db84fe3aa3b7ac02, type: 3}
+  - {fileID: 8300000, guid: 39ce3bf54770c5f4991a1fa4758ac975, type: 3}
+  - {fileID: 8300000, guid: 38da6986aa873c04e8bda31437e4b98d, type: 3}

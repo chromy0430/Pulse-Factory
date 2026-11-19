@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PulseFactory.Progression;
 using UnityEngine;
+using PulseFactory.Audio;
 
 // Only player purchases receive a receipt. Store the price at purchase time.
 [DisallowMultipleComponent]
@@ -58,10 +59,11 @@ public sealed class ConstructionReceipt : MonoBehaviour
         if (!Available || !wallet || (!Cable && !(building is BuildingRuntime))) return false;
         long refund = Quote();
         Available = false;
+        GameSounds.Play(GameSounds.Demolish);
         if (building)
             foreach (var port in building.Ports)
-                if (port.ConnectedCable) RemoveCable(port.ConnectedCable);
-        if (Cable) RemoveCable(Cable);
+                if (port.ConnectedCable) DemolishCable(port.ConnectedCable);
+        if (Cable) DemolishCable(Cable);
         else
         {
             gameObject.SetActive(false);
@@ -69,6 +71,12 @@ public sealed class ConstructionReceipt : MonoBehaviour
         }
         wallet.AddCredit(refund);
         return true;
+    }
+
+    private static void DemolishCable(PowerCable cable)
+    {
+        GameSounds.Play(GameSounds.Disconnect);
+        RemoveCable(cable);
     }
 
     public static void RemoveCable(PowerCable cable)
