@@ -15,13 +15,15 @@ MonoBehaviour:
   id: f180c2a7eb4960d459b2f33d42e5d281
   kind: 0
   title: "\uC804\uB825 \uACF5\uAE09\uB9DD \uAC15\uD654"
-  description: "\uC804\uC120 \uCD5C\uB300 \uAE38\uC774\uB97C 2m\uC5D0\uC11C 5m\uB85C
-    \uB298\uB9BD\uB2C8\uB2E4."
+  description: "\uC124\uCE58\uD560 \uC218 \uC788\uB294 \uC804\uC120\uC758 \uCD5C\uB300
+    \uAE38\uC774\uAC00 3m \uB298\uC5B4\uB0A9\uB2C8\uB2E4."
   entryNode: 1
   tooltipTitle: 
-  tooltipDescription: 
+  tooltipDescription: "\uB354 \uBA3C \uD3EC\uD2B8 \uC0AC\uC774\uC5D0 \uC804\uC120\uC744
+    \uC124\uCE58\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC5F0\uAD6C\uB97C \uC644\uB8CC\uD558\uBA74
+    \uC800\uC800\uD56D \uB3C4\uCCB4\uB97C \uC5F0\uAD6C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
   icon: {fileID: 0}
-  position: {x: 43.59796, y: -52.16163}
+  position: {x: 43.59796, y: -54.039238}
   prerequisites: []
   creditCost: 200
   researchCost: 10

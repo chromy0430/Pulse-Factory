@@ -7,6 +7,10 @@ namespace PulseFactory.Progression
     {
         [Min(1)] public int pointsPerPulse = 1;
         public override void Apply(BuildingRuntime building, ref PulseData pulse)
-            => ProgressionState.Instance?.AddResearchPoints(pointsPerPulse);
+        {
+            var state = ProgressionState.Instance;
+            if (state != null)
+                state.AddResearchPoints(pointsPerPulse + Mathf.RoundToInt(state.Total(ProgressionEffect.ResearchPointBonus)));
+        }
     }
 }

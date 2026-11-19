@@ -1,3 +1,4 @@
+using PulseFactory.Progression;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -15,12 +16,12 @@ public class AmplifyEffectSO : BuildingEffectSO
     private float multiplier = 1.5f;
 
     public float Multiplier =>
-        multiplier;
+        multiplier * (1f + (ProgressionState.Instance?.Total(ProgressionEffect.AmplifyBonus) ?? 0f));
 
     public override void Apply(
         BuildingRuntime building,
         ref PulseData pulse)
     {
-        pulse.BoostNextReceiver(pulse.BasePower * multiplier);
+        pulse.BoostNextReceiver(pulse.BasePower * Multiplier);
     }
 }

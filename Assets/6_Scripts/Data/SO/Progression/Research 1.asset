@@ -14,19 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PulseFactory.Progression.ProgressionNodeSO
   id: 42a82db735a17ae4a94131a1ae5bd99b
   kind: 0
-  title: "\uC0C8 \uC5F0\uAD6C"
-  description: 
+  title: "\uC800\uC800\uD56D \uB3C4\uCCB4"
+  description: "\uC804\uC120\uC758 \uD384\uC2A4 \uC804\uC1A1 \uC18D\uB3C4\uAC00 50%
+    \uC99D\uAC00\uD569\uB2C8\uB2E4."
   entryNode: 0
   tooltipTitle: 
-  tooltipDescription: 
+  tooltipDescription: "\uC7A5\uAC70\uB9AC \uC804\uC120\uC5D0\uC11C\uB3C4 \uC804\uB825\uC774
+    \uB354 \uBE68\uB9AC \uB3C4\uCC29\uD569\uB2C8\uB2E4. \uC5F0\uAD6C \uD6C4 \uCD9C\uBC1C\uD558\uB294
+    \uD384\uC2A4\uBD80\uD130 \uC801\uC6A9\uB418\uBA70 \uCF54\uC5B4\uC758 \uD384\uC2A4
+    \uC8FC\uAE30\uB294 \uADF8\uB300\uB85C\uC785\uB2C8\uB2E4."
   icon: {fileID: 0}
   position: {x: 263, y: -60.5}
   prerequisites:
   - {fileID: 11400000, guid: f180c2a7eb4960d459b2f33d42e5d281, type: 2}
-  creditCost: 100
-  researchCost: 0
+  creditCost: 220
+  researchCost: 12
   maxLevel: 1
   costMultiplier: 1
-  effect: 0
-  amount: 1
+  effect: 12
+  amount: 0.5
   building: {fileID: 0}

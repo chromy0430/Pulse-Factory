@@ -5,7 +5,7 @@ using UnityEngine;
 namespace PulseFactory.Progression
 {
     public enum ProgressionKind { Research, Trait }
-    public enum ProgressionEffect { None, UnlockBuilding, Capacity, PulseIntervalReduction, CreditBonus, PassiveCredit, CableLength, RefundRatio, ResearchTimeReduction, CoreTimeReduction, AmplifyBonus, StorageBonus }
+    public enum ProgressionEffect { None, UnlockBuilding, Capacity, PulseIntervalReduction, CreditBonus, PassiveCredit, CableLength, RefundRatio, ResearchTimeReduction, CoreTimeReduction, AmplifyBonus, StorageBonus, CableSpeedBonus, ResearchPointBonus, CableCostDiscount }
 
     [CreateAssetMenu(menuName = "Pulse Factory/Progression/Node")]
     public sealed class ProgressionNodeSO : ScriptableObject

@@ -266,6 +266,7 @@ public class PowerCable : MonoBehaviour
         pulseVisual.position =
             SourcePort.Anchor.position;
 
+        float speed = Definition.PulseSpeed;
         while (Vector3.Distance(
                    pulseVisual.position,
                    TargetPort.Anchor.position)
@@ -275,7 +276,7 @@ public class PowerCable : MonoBehaviour
                 Vector3.MoveTowards(
                     pulseVisual.position,
                     TargetPort.Anchor.position,
-                    Definition.PulseSpeed *
+                    speed *
                     Time.deltaTime);
 
             yield return null;

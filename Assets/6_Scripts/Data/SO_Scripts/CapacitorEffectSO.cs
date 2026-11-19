@@ -1,3 +1,4 @@
+using PulseFactory.Progression;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Pulse Factory/Building Effects/Capacitor")]
@@ -10,7 +11,10 @@ public sealed class CapacitorEffectSO : BuildingEffectSO
     {
         if (!building.TryGetComponent<CapacitorCharge>(out var charge) || !charge.isActiveAndEnabled) return;
         if (charge.TryRelease(pulse.BasePower, Mathf.Max(1, pulsesPerRelease), out float total))
-            pulse.BoostNextReceiver(total * Mathf.Max(1f, releaseMultiplier));
+        {
+            float bonus = ProgressionState.Instance?.Total(ProgressionEffect.StorageBonus) ?? 0f;
+            pulse.BoostNextReceiver(total * Mathf.Max(1f, releaseMultiplier + bonus));
+        }
         else
             pulse.Hold();
     }

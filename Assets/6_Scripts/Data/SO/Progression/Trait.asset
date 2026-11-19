@@ -15,12 +15,13 @@ MonoBehaviour:
   id: fe6f4479fd77ff84385d2d0864db9a42
   kind: 1
   title: "\uC218\uC775 \uADF9\uB300\uD654"
-  description: "\uD2B9\uC131 \uBE44\uC6A9\xB7\uB2E8\uACC4\xB7\uC5F0\uACB0\uC740 \uD14C\uC2A4\uD2B8
-    \uAE30\uBCF8\uAC12\uC785\uB2C8\uB2E4. \uC624\uB978\uCABD Inspector\uC5D0\uC11C
-    \uBCC0\uACBD\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+  description: "\uACF5\uC7A5\uC758 \uD384\uC2A4\uB2F9 \uD06C\uB808\uB527 \uC0DD\uC0B0\uB7C9\uC774
+    \uB2E8\uACC4\uB2F9 10% \uC99D\uAC00\uD569\uB2C8\uB2E4."
   entryNode: 0
   tooltipTitle: 
-  tooltipDescription: 
+  tooltipDescription: "\uC0DD\uC0B0\uB7C9 \uBCF4\uB108\uC2A4\uB294 \uB2E8\uACC4\uBCC4\uB85C
+    \uB354\uD574\uC9D1\uB2C8\uB2E4. 5\uB2E8\uACC4\uC5D0\uC11C\uB294 \uAC19\uC740
+    \uC804\uB825\uC73C\uB85C 50% \uB354 \uC0DD\uC0B0\uD569\uB2C8\uB2E4."
   icon: {fileID: 0}
   position: {x: 304.5659, y: 220}
   prerequisites:

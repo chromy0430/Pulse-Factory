@@ -1,3 +1,4 @@
+using PulseFactory.Progression;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -49,15 +50,14 @@ public class PowerCableDefinitionSO : ScriptableObject
     public float CostPerMeter => costPerMeter;
 
     public float MaxLength => maxLength + (PulseFactory.Progression.ProgressionState.Instance?.Total(PulseFactory.Progression.ProgressionEffect.CableLength) ?? 0f);
-    public float PulseSpeed => pulseSpeed;
+    public float PulseSpeed => pulseSpeed * (1f + (ProgressionState.Instance?.Total(ProgressionEffect.CableSpeedBonus) ?? 0f));
 
     public float CableWidth => cableWidth;
     public Material CableMaterial => cableMaterial;
 
     public int GetBuildCost(float length)
     {
-        return Mathf.CeilToInt(
-            baseCost +
-            length * costPerMeter);
+        float discount = Mathf.Clamp01(ProgressionState.Instance?.Total(ProgressionEffect.CableCostDiscount) ?? 0f);
+        return Mathf.CeilToInt((baseCost + length * costPerMeter) * (1f - discount));
     }
 }

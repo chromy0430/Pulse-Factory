@@ -57,6 +57,8 @@ namespace PulseFactory.UI
                 ProgressionEffect.Capacity => "Factory", ProgressionEffect.CableLength => "Cable",
                 ProgressionEffect.CreditBonus => "Profit", ProgressionEffect.PassiveCredit => "Credit",
                 ProgressionEffect.RefundRatio => "Recycle", ProgressionEffect.ResearchTimeReduction => "People",
+                ProgressionEffect.CableSpeedBonus => "Cable", ProgressionEffect.CableCostDiscount => "Cable",
+                ProgressionEffect.ResearchPointBonus => "People",
                 ProgressionEffect.AmplifyBonus => "Amplifier", ProgressionEffect.StorageBonus => "Capacitor",
                 ProgressionEffect.PulseIntervalReduction => "Core", ProgressionEffect.CoreTimeReduction => "Clock",
                 _ => node.kind == ProgressionKind.Research ? "Research" : "Star"

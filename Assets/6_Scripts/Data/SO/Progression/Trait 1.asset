@@ -15,12 +15,12 @@ MonoBehaviour:
   id: acb664ed8f54d25449aceba63b77cf84
   kind: 1
   title: "\uD30C\uC6CC\uBCF4\uB4DC \uACFC\uBD80\uD558"
-  description: "\uD2B9\uC131 \uBE44\uC6A9\xB7\uB2E8\uACC4\xB7\uC5F0\uACB0\uC740 \uD14C\uC2A4\uD2B8
-    \uAE30\uBCF8\uAC12\uC785\uB2C8\uB2E4. \uC624\uB978\uCABD Inspector\uC5D0\uC11C
-    \uBCC0\uACBD\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+  description: "\uD30C\uC6CC\uBCF4\uB4DC\uC758 \uD384\uC2A4 \uC8FC\uAE30\uAC00 \uB2E8\uACC4\uB2F9
+    0.5\uCD08 \uC9E7\uC544\uC9D1\uB2C8\uB2E4."
   entryNode: 0
   tooltipTitle: 
-  tooltipDescription: 
+  tooltipDescription: "\uAE30\uBCF8 \uC8FC\uAE30 10\uCD08\uC5D0\uC11C 1\uB2E8\uACC4\uB294
+    9.5\uCD08, 8\uB2E8\uACC4\uB294 6\uCD08\uAC00 \uB429\uB2C8\uB2E4."
   icon: {fileID: 0}
   position: {x: 1, y: 0}
   prerequisites: []
@@ -29,5 +29,5 @@ MonoBehaviour:
   maxLevel: 8
   costMultiplier: 1
   effect: 3
-  amount: 1
+  amount: 0.5
   building: {fileID: 0}

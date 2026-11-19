@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1f6595eec9e814d85b2f7c5a3c8468, type: 3}
+  m_Name: ResearchStaff
+  m_EditorClassIdentifier: Assembly-CSharp::PulseFactory.Progression.ProgressionNodeSO
+  id: 8ec454e20ff3c444ca6e96b072d4a99b
+  kind: 1
+  title: "\uC5F0\uAD6C \uC778\uB825 \uD655\uCDA9"
+  description: "\uC5F0\uAD6C \uACF5\uC7A5\uC774 \uD384\uC2A4\uB97C \uBC1B\uC744 \uB54C
+    \uB2E8\uACC4\uB2F9 \uC5F0\uAD6C \uD3EC\uC778\uD2B8\uB97C 1 \uB354 \uC5BB\uC2B5\uB2C8\uB2E4."
+  entryNode: 0
+  tooltipTitle: 
+  tooltipDescription: "\uAE30\uBCF8 \uC0DD\uC0B0\uB7C9\uC740 \uD384\uC2A4\uB2F9 1
+    RP\uC785\uB2C8\uB2E4. 1\uB2E8\uACC4\uC5D0\uC11C\uB294 2 RP, 3\uB2E8\uACC4\uC5D0\uC11C\uB294
+    4 RP\uB97C \uD68D\uB4DD\uD569\uB2C8\uB2E4."
+  icon: {fileID: 0}
+  position: {x: -3.043923, y: -203.04393}
+  prerequisites: []
+  creditCost: 150
+  researchCost: 0
+  maxLevel: 3
+  costMultiplier: 2
+  effect: 13
+  amount: 1
+  building: {fileID: 0}
