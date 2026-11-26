@@ -7,6 +7,8 @@ public sealed class CapacitorCharge : MonoBehaviour
     [ShowInInspector, ReadOnly] public int StoredCount { get; private set; }
     [ShowInInspector, ReadOnly] public float StoredPower { get; private set; }
 
+    public void Restore(int count, float power) { StoredCount = count; StoredPower = power; }
+
     public bool TryRelease(float incoming, int required, out float total)
     {
         StoredPower += incoming;

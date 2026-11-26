@@ -26,6 +26,7 @@ public class BuildingRuntime : PowerNode
         set => popNumber = Mathf.Clamp(value, 0, 5);
     }
 
+    public BuildingDefinitionSO BuildingData => definition;
     public void Initialize(BuildingDefinitionSO value)
     {
         definition = value;

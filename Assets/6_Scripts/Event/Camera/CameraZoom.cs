@@ -137,6 +137,7 @@ public class CameraZoom : MonoBehaviour
 
     private void Update()
     {
+        if (PulseFactory.Menu.PFMenuScreen.BlocksGameplay) return;
         ReadZoomInput();
         UpdateZoom();
     }
@@ -157,6 +158,7 @@ public class CameraZoom : MonoBehaviour
                 .ReadValue()
                 .y;
 
+        scroll *= PulseFactory.Menu.PFPreferences.ZoomFactor;
         if (Mathf.Abs(scroll) < 0.01f)
             return;
 

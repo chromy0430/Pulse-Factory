@@ -13,6 +13,9 @@ namespace PulseFactory.Audio
         [Tooltip("Use the clip name (without extension) as the sound ID.")]
         [SerializeField] private AudioClip[] effects;
 
+        public float MasterVolume => masterVolume;
+        public float MusicVolume => musicVolume;
+        public float EffectsVolume => effectsVolume;
         public float MusicGain => masterVolume * musicVolume;
         public float EffectsGain => masterVolume * effectsVolume;
 

@@ -27,14 +27,19 @@ public sealed class ConstructionReceipt : MonoBehaviour
     public static bool Pay(GameObject item, int cost)
     {
         if (item.GetComponent<ConstructionReceipt>() || !CanPay(cost, out _)) return false;
+        if (cost > 0 && !CreditWallet.Instance.TrySpend(cost)) return false;
+        Restore(item, cost);
+        return true;
+    }
+
+    public static void Restore(GameObject item, int cost)
+    {
         var receipt = item.AddComponent<ConstructionReceipt>();
         receipt.Cable = item.GetComponent<PowerCable>();
         receipt.building = item.GetComponent<PowerNode>();
-        if (cost > 0 && !CreditWallet.Instance.TrySpend(cost)) return false;
         receipt.PaidCost = cost;
         receipt.Available = true;
         if (receipt.Cable) cables.Add(receipt);
-        return true;
     }
 
     private void OnDestroy() => cables.Remove(this);

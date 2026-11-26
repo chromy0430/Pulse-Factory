@@ -105,6 +105,13 @@ public class PulseTimer : MonoBehaviour
         pulseEvent.Raise(pulse);
     }
 
+    public void Restore(int count, float elapsed)
+    {
+        PulseCount = count;
+        ElapsedTime = Mathf.Clamp(elapsed, 0, CurrentInterval);
+        chargeCuePlayed = RemainingTime <= .88f;
+    }
+
     public void SetInterval(float interval)
     {
         CurrentInterval =

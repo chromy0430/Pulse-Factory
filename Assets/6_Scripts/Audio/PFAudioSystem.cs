@@ -11,7 +11,11 @@ namespace PulseFactory.Audio
         private AudioSource effects;
         private AudioSource credit;
         private readonly System.Collections.Generic.Dictionary<AudioClip, int> lastFrame = new();
-        private int nextIndex;
+        private void OnEnable() => UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneChanged;
+        private void SceneChanged(UnityEngine.SceneManagement.Scene previous,UnityEngine.SceneManagement.Scene current)
+        {
+            if (settings && music) PlaySceneMusic(current.name);
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetInstance() => instance = null;
@@ -37,7 +41,7 @@ namespace PulseFactory.Audio
             effects = CreateChannel("SFX");
             credit = CreateChannel("Credit");
             ApplyVolumes();
-            PlayNextTrack();
+            PlaySceneMusic(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
 
         private AudioSource CreateChannel(string channelName)
@@ -55,20 +59,25 @@ namespace PulseFactory.Audio
         {
             if (settings == null) return;
             ApplyVolumes();
-            if (!AudioListener.pause && music.clip != null && !music.isPlaying)
-                PlayNextTrack();
+
         }
 
         private void ApplyVolumes()
         {
-            if (music.volume != settings.MusicGain) music.volume = settings.MusicGain;
-            if (credit.volume != settings.EffectsGain) credit.volume = settings.EffectsGain;
-            if (effects.volume != settings.EffectsGain) effects.volume = settings.EffectsGain;
+            float musicGain = PulseFactory.Menu.PFPreferences.MusicGain;
+            float effectsGain = PulseFactory.Menu.PFPreferences.EffectsGain;
+            if (music.volume != musicGain) music.volume = musicGain;
+            if (credit.volume != effectsGain) credit.volume = effectsGain;
+            if (effects.volume != effectsGain) effects.volume = effectsGain;
         }
 
-        private void PlayNextTrack()
+        private void PlaySceneMusic(string scene)
         {
-            music.clip = settings.NextTrack(ref nextIndex);
+            int index = scene == "Menu" ? 0 : 1;
+            var clip = settings.NextTrack(ref index);
+            if (music.clip == clip && music.isPlaying) return;
+            music.loop = true;
+            music.clip = clip;
             if (music.clip != null) music.Play();
         }
 
@@ -97,6 +106,7 @@ namespace PulseFactory.Audio
 
         private void OnDisable()
         {
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneChanged;
             if (music != null) music.Stop();
             if (effects != null) effects.Stop();
             if (credit != null) credit.Stop();

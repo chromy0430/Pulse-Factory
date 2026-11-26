@@ -24,6 +24,7 @@ public sealed class BuildController : MonoBehaviour
         cables != null && cables.IsBuildMode ? "Cable" : "Idle";
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public Vector3 PreviewPosition { get; private set; }
     [BoxGroup("Runtime"), ShowInInspector, ReadOnly] public string PlacementStatus { get; private set; }
+    public Transform BuildingRoot => buildingRoot;
     private BuildGhost ghost;
     private int selectionFrame;
     private bool demolitionMode;
@@ -58,6 +59,7 @@ public sealed class BuildController : MonoBehaviour
 
     private void Update()
     {
+        if (PulseFactory.Menu.PFMenuScreen.BlocksGameplay) return;
         if (PulseFactory.Progression.ProgressionUI.IsOpen) return;
         var keyboard = Keyboard.current;
         if (keyboard != null && keyboard.bKey.wasPressedThisFrame)

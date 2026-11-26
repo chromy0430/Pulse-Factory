@@ -83,7 +83,7 @@ public abstract class PowerNode : MonoBehaviour
     [ShowInInspector]
     [ReadOnly]
     [LabelText("Last Pulse ID")]
-    private int lastPulseId = -1;
+    public int LastPulseId { get; set; } = -1;
 
     [BoxGroup("Runtime")]
     [ShowInInspector]
@@ -135,10 +135,10 @@ public abstract class PowerNode : MonoBehaviour
     {
         // 같은 Pulse가 순환 구조를 통해
         // 다시 들어오는 것을 차단
-        if (lastPulseId == pulse.Id)
+        if (LastPulseId == pulse.Id)
             return;
 
-        lastPulseId = pulse.Id;
+        LastPulseId = pulse.Id;
         receivedPulseCount++;
 
         PulseData processedPulse =

@@ -223,6 +223,13 @@ public class PowerCable : MonoBehaviour
         }
     }
 
+    private PulseData? activeDelivery;
+    public System.Collections.Generic.IEnumerable<PulseData> PendingDeliveries()
+    {
+        if (activeDelivery.HasValue) yield return activeDelivery.Value;
+        foreach (var pulse in pulseQueue) yield return pulse;
+    }
+
     private IEnumerator TransmitQueueRoutine()
     {
         while (pulseQueue.Count > 0)
@@ -230,8 +237,9 @@ public class PowerCable : MonoBehaviour
             PulseData pulse =
                 pulseQueue.Dequeue();
 
-            yield return
-                TransmitSinglePulse(pulse);
+            activeDelivery = pulse;
+            yield return TransmitSinglePulse(pulse);
+            activeDelivery = null;
         }
 
         pulseRoutine = null;
@@ -249,6 +257,7 @@ public class PowerCable : MonoBehaviour
         GameSounds.Play(GameSounds.Travel);
         if (pulseVisual == null)
         {
+            activeDelivery = null;
             TargetNode.ReceivePulse(pulse);
             yield break;
         }
@@ -279,6 +288,7 @@ public class PowerCable : MonoBehaviour
 
         pulseVisual.gameObject.SetActive(false);
 
+        activeDelivery = null;
         TargetNode.ReceivePulse(pulse);
     }
 }

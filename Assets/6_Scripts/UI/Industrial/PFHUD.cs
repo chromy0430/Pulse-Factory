@@ -35,7 +35,7 @@ namespace PulseFactory.UI
             progression = FindFirstObjectByType<ProgressionUI>(); timer = FindFirstObjectByType<PulseTimer>();
             policy = build != null ? build.GetComponent<ProgressionBuildPolicy>() : null;
             if (build == null || panel == null) { enabled = false; yield break; }
-            Create();
+            if (transform.Find("HUD")) BindAuthoredHud(); else Create();
             var list = new System.Collections.Generic.List<Canvas>();
             foreach (var c in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 if (c.name == "ResourceBar_Canvas" || c.name == "Charge_Canvas") list.Add(c);
@@ -50,6 +50,23 @@ namespace PulseFactory.UI
             }
             gameObject.AddComponent<PFBuildPresentation>().Initialize(build, panel);
             canvas.gameObject.AddComponent<FactoryPopTooltip>().Initialize((RectTransform)canvas.transform, build);
+        }
+        private void BindAuthoredHud()
+        {
+            var root=transform.Find("HUD");
+            canvas=root.GetComponent<Canvas>();
+            credits=root.Find("StatusBar/Credits/Value").GetComponent<TextMeshProUGUI>();
+            capacity=root.Find("StatusBar/Capacity/Value").GetComponent<TextMeshProUGUI>();
+            research=root.Find("StatusBar/ResearchPoints/Value").GetComponent<TextMeshProUGUI>();
+            pulseTime=root.Find("PulseBar/Time").GetComponent<TextMeshProUGUI>();
+            hint=root.Find("InputHint/Hint").GetComponent<TextMeshProUGUI>();
+            for(int i=0;i<segments.Length;i++)segments[i]=root.Find("PulseBar/Segments/Segment"+i).GetComponent<UnityEngine.UI.Image>();
+            var nav=root.Find("Navigation").GetComponentsInChildren<UnityEngine.UI.Button>();
+            for(int i=0;i<nav.Length;i++)
+            {
+                int index=i; tabs[i]=nav[i].GetComponent<UnityEngine.UI.Image>();
+                PulseFactory.Audio.GameSounds.Bind(nav[i]);nav[i].onClick.AddListener(()=>Navigate(index));
+            }
         }
         private void Create()
         {

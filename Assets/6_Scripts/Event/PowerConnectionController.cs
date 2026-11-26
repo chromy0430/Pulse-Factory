@@ -22,6 +22,11 @@ public class PowerConnectionController : MonoBehaviour
     public PowerNode SelectedSource => selectedSourceNode;
     public PowerPortSlot SelectedPort => selectedSourcePort;
     public Camera ViewCamera => mainCamera;
+    public PowerCable RestoreWire(PowerNode a, PowerPortSlot output, PowerNode b, PowerPortSlot input)
+    {
+        return a.TryConnectTo(b, output, input, cablePrefab, cableDefinition, cableRoot) ? output.ConnectedCable : null;
+    }
+
     public float MaximumCableLength => cableDefinition != null ? cableDefinition.MaxLength : 0f;
     public string Status => selectedSourceNode == null
         ? "CABLE | Select an output port"
@@ -30,6 +35,7 @@ public class PowerConnectionController : MonoBehaviour
 
     private void Update()
     {
+        if (PulseFactory.Menu.PFMenuScreen.BlocksGameplay) return;
         if (!IsBuildMode) return;
         if (selectedSourcePort != null && (selectedSourceNode == null ||
             !selectedSourceNode.isActiveAndEnabled || !selectedSourceNode.HasFreeOutput ||

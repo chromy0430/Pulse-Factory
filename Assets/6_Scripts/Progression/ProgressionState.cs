@@ -79,6 +79,13 @@ namespace PulseFactory.Progression
             finally { purchasing = false; }
             return true;
         }
+        public void Restore(long points, Dictionary<string, int> saved)
+        {
+            levels.Clear();
+            foreach (var pair in saved) levels.Add(pair.Key, pair.Value);
+            ResearchPoints = points;
+            Changed?.Invoke();
+        }
         public float Total(ProgressionEffect effect)
         {
             float total = 0;

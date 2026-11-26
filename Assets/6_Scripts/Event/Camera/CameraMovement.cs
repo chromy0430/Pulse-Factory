@@ -78,6 +78,7 @@ public class CameraMovement : MonoBehaviour
 
     private void Update()
     {
+        if (PulseFactory.Menu.PFMenuScreen.BlocksGameplay) return;
         if (PulseFactory.Progression.ProgressionUI.IsOpen) return;
         ReadInput();
         Move();

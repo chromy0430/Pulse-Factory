@@ -117,6 +117,8 @@ public class CreditWallet : MonoBehaviour
     }
 
 
+    public void RestoreCredit(long value) { CurrentCredit = Math.Max(0, value); NotifyChanged(); }
+
     private void NotifyChanged()
     {
         OnCreditChanged?.Invoke(

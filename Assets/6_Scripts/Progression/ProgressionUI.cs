@@ -66,6 +66,7 @@ namespace PulseFactory.Progression
         private void MarkDirty() => dirty = true;
         private void Update()
         {
+            if (PulseFactory.Menu.PFMenuScreen.BlocksGameplay) return;
             if (overlay == null) return;
             var keyboard = Keyboard.current;
             if (keyboard != null)

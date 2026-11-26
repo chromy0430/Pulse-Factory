@@ -44,6 +44,7 @@ namespace PulseFactory.UI
 
         private void Update()
         {
+            if (PulseFactory.Menu.PFMenuScreen.BlocksGameplay) return;
             var mouse = Mouse.current;
             if (!panel || mouse == null) return;
             if (!view) view = Camera.main;

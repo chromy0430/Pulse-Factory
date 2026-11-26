@@ -21,6 +21,9 @@ public struct PulseData
         Power = power;
     }
 
+    public static PulseData RestoreDelivery(int id, float power, float original)
+        => new PulseData(id, power) { powerBeforeBoost = original };
+
     public void Hold() => held = true;
 
     public void BoostNextReceiver(float power)
